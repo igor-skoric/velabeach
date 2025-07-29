@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %}App{% endblock %}
+
+{% block content %}
+
+<!--<img src="{% static 'img/beach.png' class='h-5' %}"/>-->
+
+<div id="app" class="max-w-2xl mx-auto">
+
+    <div class="space-y-8 px-2 mt-10 ">
+        <!--    U pocetku je selectedStage null pa mora ovo da ne bi ulazio u gresku-->
+        <div v-if="selectedStage">
+            <div class="relative gap-2">
+                <div class="absolute -top-5">
+                    <p class="p-2 shadow rounded-sm">
+                        <span class="font-bold">Reon</span>
+                        <span class="w-8 h-8 inline-flex items-center justify-center rounded-full bg-green-500 text-white font-bold ml-2 transform transition duration-300 hover:rotate-12 shadow">[[ selectedStage.symbol ]]</span>
+                    </p>
+                </div>
+                <div class="flex justify-end flex gap-1">
+                    <h2
+                            @click="changeStage(stage)"
+                            v-for="(stage, index) in stages"
+                            :key="index"
+                            class="px-2 bg-gray-300 rounded text-white text-xl cursor-pointer hover:bg-gray-500  shadow">
+                        [[stage.symbol]]
+                    </h2>
+                </div>
+            </div>
+
+            <!-- Dinamička Tailwind klasa za broj kolona -->
+            <div class="mt-5" :class="'grid gap-1 grid-cols-' + selectedStage.chair.cols">
+                <div
+                        @click="openReservationModal(cell)"
+                        v-for="(cell, index) in generateChairCells(selectedStage)"
+                        :key="index"
+                        class="shadow h-10 flex items-center justify-center rounded text-sm font-semibold hover:bg-green-100 hover:border-green-400 hover:border-dashed cursor-pointer hover:text-black"
+                        :class="[
+                          cell.isObstacle ? 'invisible' : 'border',
+                          cell.status === 'unavailable' ? 'bg-red-400 text-white' : '',
+                          cell.status === 'available' ? 'bg-green-400 text-white' : '',
+                          cell.status === 'released' ? 'border-gray-400 border-dashed' : '',
+                          cell.status === 'reserved' ? 'bg-yellow-300 text-white' : '',
+                          cell.status === 'signature' ? 'bg-black text-white' : '',
+                          'text-black'
+                        ]"
+                >
+                    [[ cell.label ]]
+                </div>
+
+            </div>
+
+            <br>
+            <img src="{% static 'img/path_long.png' class='h-5' %}"/>
+            <br>
+
+
+            <div v-if="selectedStage.symbol=='A' || selectedStage.symbol == 'B' ">
+                <div
+                        :class="'grid gap-1 grid-cols-' + selectedStage.bed.cols">
+                    <div
+                            @click="openReservationModal(cell)"
+                            v-for="(cell, index) in generateBedCells(selectedStage)"
+                            :key="index"
+                            class="shadow h-10 flex items-center justify-center rounded text-sm font-semibold hover:bg-green-100 hover:border-green-400 hover:border-dashed cursor-pointer hover:text-black"
+                            :class="[
+                          cell.isObstacle ? 'invisible' : 'border',
+                          cell.status === 'unavailable' ? 'bg-red-400 text-white' : '',
+                          cell.status === 'available' ? 'bg-green-400 text-white' : '',
+                          cell.status === 'released' ? 'border-gray-400 border-dashed' : '',
+                          cell.status === 'reserved' ? 'bg-yellow-300 text-white' : '',
+                          'text-black'
+                        ]"
+                    >
+                        [[ cell.label ]]
+                    </div>
+                </div>
+            </div>
+            <div v-else>
+                <!-- Dinamička Tailwind klasa za broj kolona -->
+                <div class="mt-5" :class="'grid gap-1 grid-cols-' + selectedStage.chair2.cols">
+                    <div
+                            @click="openReservationModal(cell)"
+                            v-for="(cell, index) in generateChairCells(selectedStage, type='ses')"
+                            :key="index"
+                            class="shadow h-10 flex items-center justify-center rounded text-sm font-semibold hover:bg-green-100 hover:border-green-400 hover:border-dashed cursor-pointer hover:text-black"
+                            :class="[
+                          cell.isObstacle ? 'invisible' : 'border',
+                          cell.status === 'unavailable' ? 'bg-red-400 text-white' : '',
+                          cell.status === 'available' ? 'bg-green-400 text-white' : '',
+                          cell.status === 'released' ? 'border-gray-400 border-dashed' : '',
+                          cell.status === 'reserved' ? 'bg-yellow-300 text-white' : '',
+                          cell.status === 'signature' ? 'bg-black text-white' : '',
+                          'text-black'
+                        ]"
+                    >
+                        [[ cell.label ]]
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="flex justify-between items-center px-2 text-lg font-semibold">
+            <button @click="prevDay" class="text-2xl px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&larr;</button>
+            <span>[[ formattedDate ]]</span>
+            <button @click="nextDay" class="text-2xl px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&rarr;</button>
+        </div>
+    </div>
+
+
+    {% include 'website/components/dialogs.html' %}
+
+</div>
+
+
+{% endblock %}
+

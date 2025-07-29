@@ -1,0 +1,58 @@
+<!-- partials/navbar.html -->
+{% load static %}
+
+<!-- VUE NAVBAR -->
+<div id="vue-navbar">
+    <div
+        :class="['h-screen fixed top-0 left-0 h-full w-64 z-50 transform transition-transform duration-500 bg-white shadow-lg',
+        isOpen ? 'translate-x-0' : 'translate-x-[-100%]']"
+    >
+        <div class="flex justify-between items-center p-4 border-b border-gray-200">
+            <div class="font-bold">[[ user.username ]]</div>
+            <button @click="toggleMenu" class="text-gray-700 hover:text-gray-900 text-3xl font-bold">
+                &times;
+            </button>
+        </div>
+
+        <div class="flex flex-col justify-between h-[90%]">
+            <ul class="flex flex-col space-y-1 p-6 text-right">
+                <li>
+                    <a href="{% url 'home' %}"
+                       class="mt-5 p-5 bg-green-400 text-white flex justify-center font-semibold text-xl rounded-md hover:bg-green-300 hover:text-white cursor-pointer">
+                        Dashboard
+                    </a>
+                </li>
+                <li v-if="user.role == 'admin' || user.role == 'moderator'">
+                    <a href="{% url 'analytics' %}">
+                        <div class="mt-5 p-5 bg-green-400 text-white  flex justify-center font-semibold text-xl rounded-md hover:bg-green-300 hover:text-white cursor-pointer">
+                            Analitika
+                        </div>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Logout dugme sa POST -->
+            <div class="p-4">
+                <form id="logout-form" action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit"
+                        class="w-full p-3 bg-red-400 text-white text-lg font-semibold rounded hover:bg-red-600">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dugme za otvaranje menija -->
+    <button
+        v-if="!isOpen"
+        @click="toggleMenu"
+        class="fixed top-2 right-4 bg-green-600 text-white px-4  rounded-md shadow-lg z-40"
+    >
+        &#9776;
+    </button>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="{% static 'js/header.js' %}"></script>

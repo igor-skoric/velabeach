@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %}App{% endblock %}
+
+{% block content %}
+
+<style>
+    #analytics {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .chart-wrapper {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .chart-canvas {
+      width: 100% !important;
+      height: 300px !important;
+      max-width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .chart-canvas {
+        aspect-ratio: 1 / 1; /* kvadratniji na mobilnim uređajima */
+      }
+    }
+
+    input[type="date"] {
+      width: 100%;
+      max-width: 250px;
+    }
+</style>
+
+<div id="analytics">
+    <div class="flex flex-col gap-6 md:flex-row md:items-start">
+        <!-- Form za datume -->
+        <div class="p-10 flex flex-col gap-3 w-full md:w-1/3 justify-center items-center">
+            <input type="date" id="start_date" v-model="startDate" class="border p-2 rounded"/>
+            <input type="date" id="end_date" v-model="endDate" class="border p-2 rounded"/>
+            <button @click="createDailyChart" class="bg-green-600 hover:bg-green-700 text-white w-full py-2 rounded ">
+                Prikaži
+            </button>
+        </div>
+
+        <!-- Dnevni grafikon -->
+        <div class="chart-wrapper md:w-2/3">
+            <canvas id="revenueChart" class="chart-canvas"></canvas>
+        </div>
+    </div>
+
+    <div class="flex flex-col gap-6 md:flex-row md:items-start">
+        <!-- Form za datume -->
+        <div class="hidden md:flex p-10 flex flex-col gap-3 w-full md:w-1/3">
+
+        </div>
+
+        <!-- Mesecni grafikon -->
+        <div class="mt-8 chart-wrapper">
+            <canvas id="monthlyChart" class="chart-canvas"></canvas>
+        </div>
+    </div>
+
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="{% static 'js/analytics.js' %}"></script>
+{% endblock %}
+
