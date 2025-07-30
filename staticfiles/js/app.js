@@ -1,4 +1,4 @@
-
+const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
 
 
     // Funkcija za čitanje CSRF tokena iz kolačića
@@ -16,10 +16,8 @@
       }
       return cookieValue;
     }
-
     // Postavi CSRF token u Axios default zaglavlje
     const csrfToken = getCookie('csrftoken');
-
     if (csrfToken) {
       axios.defaults.headers.common['X-CSRFToken'] = csrfToken;
     }
@@ -43,6 +41,7 @@
               XI: 15,
               baldahin: 20,
             },
+            todayDate: new Date(),
             currentDate: new Date(),
             stages: [
               {
@@ -152,7 +151,7 @@
         };
       },
       mounted() {
-        this.selectedStage = this.stages[2]
+        this.selectedStage = this.stages.find(stage => stage.symbol == user.stage)
 //        this.fetchRevenue();
       },
       methods: {
@@ -185,7 +184,6 @@
               generateChairCells(stage, type='first') {
                   const result = [];
                   let totalCells, cols, currentIndex, obstacles;
-                  console.log(type);
                   if (type==='first'){
                     obstacles = stage.chair.obstacles;
                     currentIndex = 0;
@@ -315,6 +313,7 @@
                   }
                 },
               async fetchRevenue() {
+
                   const date = this.currentDate.toISOString().split('T')[0];
                   const end_date = date;
 
@@ -323,7 +322,6 @@
                       const response = await this.fetchData('api/daily-revenue-by-date/', { date, end_date });
                       this.revenue = response[0];
                       return response;
-
 
                     } catch (e) {
                       // Dodatna obrada greške ako je potrebna
@@ -395,7 +393,6 @@
                 }
               },
               openReservationModal(cell) {
-                console.log(cell)
                 this.selectedCell = cell;
 
                 this.reservationForm = {
@@ -413,6 +410,8 @@
               },
               async submitReservationForm() {
                   const confirmed = await this.openDialog('save');
+                  let date_from = new Date(this.reservationForm.date_from);
+                  let date_to = new Date(this.reservationForm.date_to);
 
                   if (!confirmed) {
                     console.log('Korisnik je otkazao čuvanje');
@@ -422,10 +421,17 @@
                   if(this.reservationForm.status !== 'reserved'){
                     this.reservationForm.date_from = this.currentDate.toISOString().split('T')[0];
                     this.reservationForm.date_to = this.currentDate.toISOString().split('T')[0];
+                    date_from = new Date(this.reservationForm.date_from);
+                    date_to = new Date(this.reservationForm.date_to);
+                  }
+
+                  if (!this.validateDates(date_from, date_to)){
+                    return;
                   }
 
                   this.postReservation();
                   this.closeReservationModal();
+
               },
               onStatusChange() {
                 if (this.reservationForm.status === 'available' || this.reservationForm.status === 'signature') {
@@ -482,7 +488,7 @@
     //                  this.fetchRevenue();
                       this.showNotification('Uspešno obrisano!', 'success');
                     } catch (error) {
-                    console.log(error)
+                        console.log(error)
                       if (error.response && error.response.status === 409) {
                         this.showNotification('Ležaljka je već rezervisana.', 'error');
                       } else {
@@ -509,13 +515,35 @@
                 setTimeout(() => {
                   this.notification.show = false;
                 }, 3000);
-              }
+              },
+              validateDates(startDate, endDate){
+                 if(this.normalizeDate(startDate) > this.normalizeDate(endDate)){
+                        this.showNotification('Početni datum ne može biti stariji od datuma završetka.', 'error');
+                        return false;
+                   }
+                  if(this.normalizeDate(startDate) < this.normalizeDate(this.currentDate)){
+                        this.showNotification('Početni datum ne može biti u prošlosti.', 'error');
+                        return false;
+                   }
+
+                  if(this.normalizeDate(startDate) < this.normalizeDate(this.todayDate)){
+                        this.showNotification('Rezervacije u prošlosti nisu moguće.', 'error');
+                        return false;
+                   }
+                   return true
+              },
+              normalizeDate(date) {
+                  const d = new Date(date);
+                  d.setHours(0, 0, 0, 0);
+                  return d;
+                }
           },
       computed: {
           formattedDate() {
-            return this.currentDate.toLocaleDateString('sr-RS', {
+            return this.currentDate.toLocaleDateString('sr-Latn-RS', {
+              weekday: 'long',
               day: '2-digit',
-              month: '2-digit',
+              month: 'long',
               year: 'numeric',
             });
           }
