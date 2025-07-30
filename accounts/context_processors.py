@@ -21,10 +21,12 @@ def user_json(request):
         "id": user.id,
         "username": user.username,
         "first_name": user.first_name,
+        "last_name": user.last_name,
         "email": user.email,
         "is_staff": user.is_staff,
         "is_superuser": user.is_superuser,
         "role": role,
+        "stage": user.stage.name
     }
 
     return {"user_json": mark_safe(json.dumps(user_data))}

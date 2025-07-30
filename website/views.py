@@ -191,10 +191,11 @@ class DailyRevenueByDateAPIView(APIView):
             serializer = DailyRevenueSerializer(revenue, many=True)
         else:
             # Prazan odgovor ako ne postoji podatak za taj datum
-            serializer = DailyRevenueSerializer(DailyRevenue(
+            empty_revenue = DailyRevenue(
                 date=date,
                 A=0, B=0, C=0, D=0, total_income=0
-            ))
+            )
+            serializer = DailyRevenueSerializer([empty_revenue], many=True)
 
         return Response(serializer.data)
 

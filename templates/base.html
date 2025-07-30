@@ -17,16 +17,18 @@
     <!-- AXIOS CDN ZA API -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
+    <meta name="robots" content="noindex, nofollow">
+
     {% tailwind_css %}
 </head>
 
-<body>
+<body class="pb-24">
 
 <script>
     window.user = {{ user_json }};
 </script>
 
-    {% include 'header.html' %}
+
 
 {% block content %}
 {% endblock %}

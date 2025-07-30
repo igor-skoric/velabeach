@@ -2,57 +2,73 @@
 {% load static %}
 
 <!-- VUE NAVBAR -->
-<div id="vue-navbar">
-    <div
-        :class="['h-screen fixed top-0 left-0 h-full w-64 z-50 transform transition-transform duration-500 bg-white shadow-lg',
-        isOpen ? 'translate-x-0' : 'translate-x-[-100%]']"
-    >
-        <div class="flex justify-between items-center p-4 border-b border-gray-200">
-            <div class="font-bold">[[ user.username ]]</div>
-            <button @click="toggleMenu" class="text-gray-700 hover:text-gray-900 text-3xl font-bold">
-                &times;
-            </button>
-        </div>
 
-        <div class="flex flex-col justify-between h-[90%]">
-            <ul class="flex flex-col space-y-1 p-6 text-right">
-                <li>
-                    <a href="{% url 'home' %}"
-                       class="mt-5 p-5 bg-green-400 text-white flex justify-center font-semibold text-xl rounded-md hover:bg-green-300 hover:text-white cursor-pointer">
-                        Dashboard
-                    </a>
-                </li>
-                <li v-if="user.role == 'admin' || user.role == 'moderator'">
-                    <a href="{% url 'analytics' %}">
-                        <div class="mt-5 p-5 bg-green-400 text-white  flex justify-center font-semibold text-xl rounded-md hover:bg-green-300 hover:text-white cursor-pointer">
-                            Analitika
-                        </div>
-                    </a>
-                </li>
-            </ul>
 
-            <!-- Logout dugme sa POST -->
-            <div class="p-4">
-                <form id="logout-form" action="{% url 'logout' %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit"
-                        class="w-full p-3 bg-red-400 text-white text-lg font-semibold rounded hover:bg-red-600">
-                        Logout
-                    </button>
-                </form>
+<div class="rounded fixed bottom-0 left-0 w-full z-50 transform transition-transform duration-500 bg-white shadow-lg">
+    <div class="max-w-2xl mx-auto flex justify-around items-center h-full ">
+
+        <!-- Dashboard -->
+        <a href="{% url 'home' %}" class="p-3 rounded-lg hover:bg-green-300 transition-colors">
+            <div class="flex flex-col justify-center items-center">
+                <img src="{% static 'img/icons/beach-chair-summer-svgrepo-com.svg' %}" class="w-6 h-6">
+                <span class="text-sm">Lеžaljke</span>
+            </div>
+        </a>
+
+
+            <!-- Analytics -->
+            <a v-if="user.role == 'admin' || user.role == 'moderator'" href="{% url 'analytics' %}" class="p-3 rounded-lg hover:bg-green-300 transition-colors">
+                <div class="flex flex-col justify-center items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                         class="w-6 h-6 text-black">
+                        <path fill-rule="evenodd"
+                              d="M12.577 4.878a.75.75 0 0 1 .919-.53l4.78 1.281a.75.75 0 0 1 .531.919l-1.281 4.78a.75.75 0 0 1-1.449-.387l.81-3.022a19.407 19.407 0 0 0-5.594 5.203.75.75 0 0 1-1.139.093L7 10.06l-4.72 4.72a.75.75 0 0 1-1.06-1.061l5.25-5.25a.75.75 0 0 1 1.06 0l3.074 3.073a20.923 20.923 0 0 1 5.545-4.931l-3.042-.815a.75.75 0 0 1-.53-.919Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-sm">Grafikoni</span>
+                </div>
+            </a>
+
+
+        {% if not "/analytics/" in request.path %}
+        <div v-if="user.role == 'admin' || user.role == 'moderator'">
+            <!-- Profit -->
+            <div @click="showRevenue = !showRevenue" class="p-3 rounded-lg hover:bg-green-300 transition-colors">
+                <div class="flex flex-col justify-center items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="lucide lucide-circle-dollar-sign w-6 h-6 text-black">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
+                        <path d="M12 18V6"/>
+                    </svg>
+                    <span class="text-sm">Profit</span>
+                </div>
             </div>
         </div>
+        {% endif %}
+
+        <!-- Logout -->
+        <form id="logout-form" action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="p-3 rounded-lg hover:bg-red-300 transition-colors">
+                <div class="flex flex-col justify-center items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="lucide lucide-circle-power w-6 h-6 text-red-600">
+                        <path d="M12 7v4"/>
+                        <path d="M7.998 9.003a5 5 0 1 0 8-.005"/>
+                        <circle cx="12" cy="12" r="10"/>
+                    </svg>
+                    <span class="text-sm text-red-600">Logout</span>
+                </div>
+            </button>
+        </form>
+
     </div>
 
-    <!-- Dugme za otvaranje menija -->
-    <button
-        v-if="!isOpen"
-        @click="toggleMenu"
-        class="fixed top-2 right-4 bg-green-600 text-white px-4  rounded-md shadow-lg z-40"
-    >
-        &#9776;
-    </button>
 </div>
 
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<script src="{% static 'js/header.js' %}"></script>
+
+<!--<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>-->
+<!--<script src="{% static 'js/header.js' %}"></script>-->

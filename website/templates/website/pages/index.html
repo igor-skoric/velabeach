@@ -9,14 +9,15 @@
 
 <div id="app" class="max-w-2xl mx-auto">
 
+
     <div class="space-y-8 px-2 mt-10 ">
         <!--    U pocetku je selectedStage null pa mora ovo da ne bi ulazio u gresku-->
         <div v-if="selectedStage">
             <div class="relative gap-2">
                 <div class="absolute -top-5">
                     <p class="p-2 shadow rounded-sm">
-                        <span class="font-bold">Reon</span>
-                        <span class="w-8 h-8 inline-flex items-center justify-center rounded-full bg-green-500 text-white font-bold ml-2 transform transition duration-300 hover:rotate-12 shadow">[[ selectedStage.symbol ]]</span>
+                        <span class="font-bold">[[user.first_name]] [[user.last_name]]</span>
+<!--                        <span class="w-8 h-8 inline-flex items-center justify-center rounded-full bg-green-500 text-white font-bold ml-2 transform transition duration-300 hover:rotate-12 shadow">[[ selectedStage.symbol ]]</span>-->
                     </p>
                 </div>
                 <div class="flex justify-end flex gap-1">
@@ -24,7 +25,7 @@
                             @click="changeStage(stage)"
                             v-for="(stage, index) in stages"
                             :key="index"
-                            class="px-2 bg-gray-300 rounded text-white text-xl cursor-pointer hover:bg-gray-500  shadow">
+                            :class="['px-2 rounded text-white text-xl cursor-pointer shadow transition',selectedStage === stage ? 'bg-gray-500' : 'bg-gray-300 hover:bg-gray-500']">
                         [[stage.symbol]]
                     </h2>
                 </div>
@@ -80,7 +81,7 @@
             </div>
             <div v-else>
                 <!-- Dinamička Tailwind klasa za broj kolona -->
-                <div class="mt-5" :class="'grid gap-1 grid-cols-' + selectedStage.chair2.cols">
+                <div :class="'grid gap-1 grid-cols-' + selectedStage.chair2.cols">
                     <div
                             @click="openReservationModal(cell)"
                             v-for="(cell, index) in generateChairCells(selectedStage, type='ses')"
@@ -106,15 +107,27 @@
         </div>
 
         <div class="flex justify-between items-center px-2 text-lg font-semibold">
-            <button @click="prevDay" class="text-2xl px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&larr;</button>
+            <button @click="prevDay" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="text-2xl lucide lucide-chevron-left-icon lucide-chevron-left">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+            </button>
             <span>[[ formattedDate ]]</span>
-            <button @click="nextDay" class="text-2xl px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&rarr;</button>
+            <button @click="nextDay" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="text-sm lucide lucide-chevron-right-icon lucide-chevron-right">
+                    <path d="m9 18 6-6-6-6"/>
+                </svg>
+            </button>
         </div>
     </div>
 
 
     {% include 'website/components/dialogs.html' %}
-
+    {% include 'header.html' %}
 </div>
 
 

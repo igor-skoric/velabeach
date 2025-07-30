@@ -25,18 +25,18 @@
                 <div>
                     <label class="block mb-1 font-semibold">Status</label>
                     <select @change="onStatusChange" v-model="reservationForm.status"
-                            class="w-full border rounded px-3 py-2">
+                            class="w-full border rounded px-3 py-2" required>
                         <option value="unavailable">Zauzeto</option>
                         <option value="available">Dostupno</option>
                         <option value="reserved">Rezervisano</option>
                         <option value="signature">Potpis</option>
-                    </select>
+                    </select >
                 </div>
 
                 <!-- Cena -->
                 <div v-if="reservationForm.status !== 'available' && reservationForm.status !== 'signature'">
                     <label class="block mb-1 font-semibold">Cena</label>
-                    <input type="number" v-model="reservationForm.price" class="w-full border rounded px-3 py-2"/>
+                    <input type="number" v-model="reservationForm.price" class="w-full border rounded px-3 py-2" required/>
                 </div>
             </div>
 
@@ -45,11 +45,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div class="mb-2">
                         <label class="block mb-1 font-semibold">Datum od</label>
-                        <input type="date" v-model="reservationForm.date_from" class="w-full border rounded px-3 py-2"/>
+                        <input type="date" v-model="reservationForm.date_from" class="w-full border rounded px-3 py-2" required/>
                     </div>
                     <div>
                         <label class="block mb-1 font-semibold">Datum do</label>
-                        <input type="date" v-model="reservationForm.date_to" class="w-full border rounded px-3 py-2"/>
+                        <input type="date" v-model="reservationForm.date_to" class="w-full border rounded px-3 py-2" required/>
                     </div>
                 </div>
 
@@ -65,7 +65,7 @@
                     <div class="flex w-full gap-2">
                         <div class="w-full border-l-4 border-l-green-400 shadow rounded p-3 bg-white text-sm text-gray-800">
                             <div class="flex justify-between items-center mb-1">
-                                <span class="font-semibold">[[ index + 1 ]]. [[ detail.user ]]</span>
+                                <span class="font-semibold">[[ index + 1 ]]. [[ detail.user_display ]]</span>
                                 <span class="text-xs text-gray-500">[[ detail.status_display ]]</span>
                             </div>
                             <div class="flex justify-between items-center text-xs text-gray-600">
@@ -122,18 +122,9 @@
 
 
 <div v-if="user.role == 'admin' || user.role == 'moderator'">
-    <!-- Klizna kartica BUTTON -->
-    <button
-            @click="showRevenue = !showRevenue"
-            class="fixed top-1/2 right-0 transform -translate-y-1/4 bg-green-400 text-white px-3 py-5 rounded-l-lg shadow-lg z-50 hover:bg-green-700"
-    >
-        <span v-if="!showRevenue"><</span>
-        <span v-else>></span>
-    </button>
 
     <!-- Menu -->
     <div class="flex flex-col justify-between">
-
         <div
                 class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-xl border-l-2 rounded-l-xl border-green-200 p-6 z-40 transition-transform duration-300 ease-in-out"
                 :class="showRevenue ? 'translate-x-0' : 'translate-x-full'"

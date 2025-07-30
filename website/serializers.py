@@ -6,13 +6,17 @@ from .models import Reservation, ReservationLog, ReservationDetail, DailyRevenue
 class ReservationDetailSerializer(serializers.ModelSerializer):
     status_display = serializers.SerializerMethodField(read_only=True)
     user = serializers.CharField(source='user.username', read_only=True)
+    user_display = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = ReservationDetail
-        fields = ['id',  'user', 'price', 'status', 'status_display', 'reserved_at']
+        fields = ['id',  'user', 'price', 'status', 'status_display', 'reserved_at', 'user_display']
 
     def get_status_display(self, obj):
         return obj.get_status_display()
+
+    def get_user_display(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}"
 
 
 class ReservationSerializer(serializers.ModelSerializer):
@@ -21,6 +25,7 @@ class ReservationSerializer(serializers.ModelSerializer):
     stage = serializers.CharField(source='lounger.stage.name', read_only=True)
     user = serializers.CharField(source='user.username', read_only=True)
     status_display = serializers.SerializerMethodField(read_only=True)
+    user_display = serializers.SerializerMethodField(read_only=True)
 
     details = ReservationDetailSerializer(many=True)
     # total_price = serializers.IntegerField(read_only=True)
@@ -30,8 +35,11 @@ class ReservationSerializer(serializers.ModelSerializer):
         model = Reservation
         fields = [
             'id', 'user', 'lounger', 'lounger_position', 'lounger_type', 'stage',
-            'date', 'end_date', 'status', 'status_display', 'details'
+            'date', 'end_date', 'status', 'status_display', 'details', 'user_display'
         ]
+
+    def get_user_display(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}"
 
     # Validacija jer su datum i lezaljka jedinstveni, pa create ne moze da prodje i da kreira samo detalje ako vec postoji rezervacija kreirana
 
