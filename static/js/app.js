@@ -196,8 +196,6 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                     cols = stage.chair2.cols;
                   }
 
-
-
                   for (let i = 0; i < totalCells; i++) {
                     if (obstacles.includes(i)) {
                       result.push({ isObstacle: true, label: 'X', price: 0 });
@@ -394,14 +392,12 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
               },
               openReservationModal(cell) {
                 this.selectedCell = cell;
-
                 this.reservationForm = {
                     status: this.selectedCell.status,
                     price: this.selectedCell.price,
-                    dateFrom: this.selectedCell.date_from,
-                    dateTo: this.selectedCell.date_to,
+                    date_from: this.selectedCell.reservation ? this.selectedCell.reservation.date : '',
+                    date_to: this.selectedCell.reservation ? this.selectedCell.reservation.end_date : '',
                   }
-
                 this.modalOpen = true;
               },
               closeReservationModal() {
@@ -441,6 +437,7 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                 }
               },
               openDialog(type) {
+                let message = ''
                 this.dialogType = type;
                 this.dialogVisible = true;
 
@@ -453,7 +450,10 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                 } else if (type === 'save') {
                   this.dialogTitle = 'Potvrda čuvanja';
                   this.dialogMessage = 'Da li želite da sačuvate izmene?';
-                } else {
+                } else if (type === 'logout'){
+                  this.dialogTitle = 'Odjava';
+                  this.dialogMessage = 'Da li želite da se odjavite?';
+                } else{
                   this.dialogTitle = 'Potvrda';
                   this.dialogMessage = 'Da li želite da nastavite?';
                 }
@@ -536,7 +536,21 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                   const d = new Date(date);
                   d.setHours(0, 0, 0, 0);
                   return d;
-                }
+                },
+              async submitLogoutForm(){
+                const confirmed = await this.openDialog('logout');
+                const form = document.getElementById('logout-form');
+
+                  if (!confirmed) {
+                    console.log('Korisnik je otkazao čuvanje');
+                    return;
+                  }
+                  if (form) {
+                    form.submit();
+                  } else {
+                    console.warn('Logout form not found');
+                  }
+              }
           },
       computed: {
           formattedDate() {

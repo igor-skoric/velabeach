@@ -18,13 +18,12 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!--   Mobile app -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#ffffff">
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <link rel="apple-touch-icon" href="{% static 'img/icons/icon-192x192.png' %}">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-
 
     {% tailwind_css %}
 </head>
@@ -48,6 +47,7 @@
 
 
 <script src="{% static 'js/app.js' %}"></script>
+
 <script src="{% static 'js/base.js' %}"></script>
 
 </body>

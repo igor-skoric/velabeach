@@ -1,7 +1,7 @@
 # serializers.py
 from rest_framework import serializers
 from .models import Reservation, ReservationLog, ReservationDetail, DailyRevenue
-
+from django.db import models
 
 class ReservationDetailSerializer(serializers.ModelSerializer):
     status_display = serializers.SerializerMethodField(read_only=True)
@@ -36,6 +36,10 @@ class ReservationSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'user', 'lounger', 'lounger_position', 'lounger_type', 'stage',
             'date', 'end_date', 'status', 'status_display', 'details', 'user_display'
+        ]
+        indexes = [
+            models.Index(fields=["date"]),
+            models.Index(fields=["lounger"]),
         ]
 
     def get_user_display(self, obj):

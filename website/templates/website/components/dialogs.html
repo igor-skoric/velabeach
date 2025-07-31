@@ -39,7 +39,6 @@
                     <input type="number" v-model="reservationForm.price" class="w-full border rounded px-3 py-2" required/>
                 </div>
             </div>
-
             <!-- Prikaz datuma samo ako je "reserved" -->
             <div v-if="reservationForm.status === 'reserved'" class="mt-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -114,7 +113,7 @@
         <p class="mb-6">[[ dialogMessage ]]</p>
         <div class="flex justify-end space-x-4">
             <button @click="cancelDialog" class="px-4 py-2 rounded border border-gray-400 hover:bg-gray-100">NE</button>
-            <button @click="confirmDialog" class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-800">OK
+            <button @click="confirmDialog" class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-800">DA
             </button>
         </div>
     </div>

@@ -8,7 +8,7 @@ from .models import Stage, Lounger, Reservation, ReservationDetail, ReservationL
 from rest_framework import viewsets
 from django.contrib.auth import get_user_model
 from datetime import timedelta, datetime
-from django.db.models import Count
+from django.db.models import Count, Prefetch
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
 
@@ -46,7 +46,7 @@ def analytics(request):
 class ReservationListAPIView(APIView):
     def get(self, request):
         stage = request.query_params.get('stage')
-        date = request.query_params.get('date')  # format YYYY-MM-DD
+        date = request.query_params.get('date')
 
         if not stage or not date:
             return Response(
@@ -54,11 +54,16 @@ class ReservationListAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        details_with_users = Prefetch(
+            'details',
+            queryset=ReservationDetail.objects.select_related('user')
+        )
+
         reservations = (
             Reservation.objects
             .filter(lounger__stage__name=stage, date=date)
-            .select_related('lounger', 'user')  # dodaj sve FK koje koristiš u serializeru
-            .prefetch_related('details')        # dodaj i ostale M2M ako ih imaš
+            .select_related('lounger__lounger_type', 'lounger__stage', 'user')
+            .prefetch_related(details_with_users)
         )
 
         serializer = ReservationSerializer(reservations, many=True)

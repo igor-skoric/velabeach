@@ -3,6 +3,7 @@ const { reactive, ref, onMounted } = Vue;
 const analytics = createApp({
   setup() {
 
+    const user = ref(window.user) || ref(null);
     const dailyChartInstance = ref(null);
     const monthlyChartInstance = ref(null);
 
@@ -16,6 +17,13 @@ const analytics = createApp({
     });
 
 
+  // Default Dialog
+  let dialogVisible= ref(false);
+  let dialogType= ref(null);
+  let dialogTitle= ref('');
+  let dialogMessage= ref('');
+  let dialogResolve= ref(null);
+
    const currentDate = ref(new Date());
    const todayStr = currentDate.value.toISOString().split('T')[0];
 
@@ -26,7 +34,7 @@ const analytics = createApp({
    const startDate = ref(sevenDaysAgoStr);
    const endDate = ref(todayStr);
 
-    const fetchData = async (url, params = {}) => {
+   const fetchData = async (url, params = {}) => {
       try {
         const response = await axios.get(url, { params });
         return response.data;
@@ -35,7 +43,7 @@ const analytics = createApp({
         throw error;
       }
     };
-    const fetchRevenue = async () => {
+   const fetchRevenue = async () => {
       const date = startDate.value;
       const end_date = endDate.value;
 
@@ -52,7 +60,7 @@ const analytics = createApp({
       }
     };
 
-    function groupDataByMonth(data) {
+   function groupDataByMonth(data) {
       const monthlyData = {};
 
       data.forEach(item => {
@@ -71,7 +79,65 @@ const analytics = createApp({
       return { labels2, totals2 };
     }
 
-    const createDailyChart = async () => {
+   function openDialog(type) {
+        let message = ''
+        dialogType.value = type;
+        dialogVisible.value = true;
+
+        if (type === 'delete') {
+          dialogTitle.value = 'Potvrda brisanja';
+          dialogMessage.value = 'Da li ste sigurni da želite da obrišete?';
+        } else if (type === 'add') {
+          dialogTitle.value = 'Potvrda dodavanja';
+          dialogMessage.value = 'Da li želite da dodate ovaj podatak?';
+        } else if (type === 'save') {
+          dialogTitle.value = 'Potvrda čuvanja';
+          dialogMessage.value = 'Da li želite da sačuvate izmene?';
+        } else if (type === 'logout'){
+          dialogTitle.value = 'Odjava';
+          dialogMessage.value = 'Da li želite da se odjavite?';
+        } else {
+          dialogTitle.value = 'Potvrda';
+          dialogMessage.value = 'Da li želite da nastavite?';
+        }
+
+        // Vrati Promise da možeš čekati na odgovor korisnika
+        return new Promise((resolve) => {
+            console.log("Promise")
+          dialogResolve.value = resolve;
+        });
+  }
+
+   const confirmDialog = () => {
+        dialogVisible.value = false;
+        if (dialogResolve.value) {
+          dialogResolve.value(true);
+        }
+      }
+   const cancelDialog = () => {
+        dialogVisible.value = false;
+        if (dialogResolve.value) {
+          dialogResolve.value(false);
+        }
+      }
+   const submitLogoutForm = async () => {
+        console.log('ses');
+        const confirmed = await openDialog('logout');
+        console.log(confirmed);
+        const form = document.getElementById('logout-form');
+
+          if (!confirmed) {
+            console.log('Korisnik je otkazao čuvanje');
+            return;
+          }
+          if (form) {
+            form.submit();
+          } else {
+            console.warn('Logout form not found');
+          }
+      }
+
+   const createDailyChart = async () => {
       if (dailyChartInstance.value) {
         dailyChartInstance.value.destroy();
       }
@@ -161,7 +227,7 @@ const analytics = createApp({
       });
 
 
-          // NEW CHART SORTED MOUNTS
+      // NEW CHART SORTED MOUNTS
       const { labels2, totals2 } = groupDataByMonth(response);
       const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
 
@@ -193,12 +259,13 @@ const analytics = createApp({
       });
     }
 
+
     onMounted(async () => {
         await createDailyChart();
 
     });
 
-    return { revenue, currentDate, startDate, endDate, createDailyChart  };
+    return { revenue, currentDate, startDate, endDate, createDailyChart, user, submitLogoutForm, dialogVisible,dialogType,dialogTitle,dialogMessage,dialogResolve, confirmDialog, cancelDialog};
   }
 });
 

@@ -14,7 +14,7 @@
         <!--    U pocetku je selectedStage null pa mora ovo da ne bi ulazio u gresku-->
         <div v-if="selectedStage">
             <div class="relative gap-2">
-                <div class="absolute -top-5">
+                <div class="absolute -top-2">
                     <p class="p-2 shadow rounded-sm">
                         <span class="font-bold">[[user.first_name]] [[user.last_name]]</span>
 <!--                        <span class="w-8 h-8 inline-flex items-center justify-center rounded-full bg-green-500 text-white font-bold ml-2 transform transition duration-300 hover:rotate-12 shadow">[[ selectedStage.symbol ]]</span>-->
@@ -50,13 +50,11 @@
                 >
                     [[ cell.label ]]
                 </div>
-
             </div>
 
-            <br>
-            <img src="{% static 'img/path_long.png' class='h-5' %}"/>
-            <br>
-
+            <div class="my-2">
+                <img src="{% static 'img/path_long.webp' class='h-5' %}"/>
+            </div>
 
             <div v-if="selectedStage.symbol=='A' || selectedStage.symbol == 'B' ">
                 <div
@@ -72,6 +70,7 @@
                           cell.status === 'available' ? 'bg-green-400 text-white' : '',
                           cell.status === 'released' ? 'border-gray-400 border-dashed' : '',
                           cell.status === 'reserved' ? 'bg-yellow-300 text-white' : '',
+                          cell.status === 'signature' ? 'bg-black text-white' : '',
                           'text-black'
                         ]"
                     >

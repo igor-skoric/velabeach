@@ -4,7 +4,7 @@
 <!-- VUE NAVBAR -->
 
 
-<div class="rounded fixed bottom-0 left-0 w-full z-50 transform transition-transform duration-500 bg-white shadow-lg">
+<div class="border-t border-gray-50/80 rounded fixed bottom-0 left-0 w-full z-40 transform transition-transform duration-500 bg-white shadow-lg">
     <div class="max-w-2xl mx-auto flex justify-around items-center h-full ">
 
         <!-- Dashboard -->
@@ -16,24 +16,25 @@
         </a>
 
 
-            <!-- Analytics -->
-            <a v-if="user.role == 'admin' || user.role == 'moderator'" href="{% url 'analytics' %}" class="p-3 rounded-lg hover:bg-green-300 transition-colors">
-                <div class="flex flex-col justify-center items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                         class="w-6 h-6 text-black">
-                        <path fill-rule="evenodd"
-                              d="M12.577 4.878a.75.75 0 0 1 .919-.53l4.78 1.281a.75.75 0 0 1 .531.919l-1.281 4.78a.75.75 0 0 1-1.449-.387l.81-3.022a19.407 19.407 0 0 0-5.594 5.203.75.75 0 0 1-1.139.093L7 10.06l-4.72 4.72a.75.75 0 0 1-1.06-1.061l5.25-5.25a.75.75 0 0 1 1.06 0l3.074 3.073a20.923 20.923 0 0 1 5.545-4.931l-3.042-.815a.75.75 0 0 1-.53-.919Z"
-                              clip-rule="evenodd"/>
-                    </svg>
-                    <span class="text-sm">Grafikoni</span>
-                </div>
-            </a>
+        <!-- Analytics -->
+        <a v-if="user.role == 'admin' || user.role == 'moderator'" href="{% url 'analytics' %}"
+           class="p-3 rounded-lg hover:bg-green-300 transition-colors">
+            <div class="flex flex-col justify-center items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                     class="w-6 h-6 text-black">
+                    <path fill-rule="evenodd"
+                          d="M12.577 4.878a.75.75 0 0 1 .919-.53l4.78 1.281a.75.75 0 0 1 .531.919l-1.281 4.78a.75.75 0 0 1-1.449-.387l.81-3.022a19.407 19.407 0 0 0-5.594 5.203.75.75 0 0 1-1.139.093L7 10.06l-4.72 4.72a.75.75 0 0 1-1.06-1.061l5.25-5.25a.75.75 0 0 1 1.06 0l3.074 3.073a20.923 20.923 0 0 1 5.545-4.931l-3.042-.815a.75.75 0 0 1-.53-.919Z"
+                          clip-rule="evenodd"/>
+                </svg>
+                <span class="text-sm">Grafikoni</span>
+            </div>
+        </a>
 
 
         {% if not "/analytics/" in request.path %}
         <div v-if="user.role == 'admin' || user.role == 'moderator'">
             <!-- Profit -->
-            <div @click="showRevenue = !showRevenue" class="p-3 rounded-lg hover:bg-green-300 transition-colors">
+            <div @click="showRevenue = !showRevenue" class="p-3 rounded-lg hover:bg-green-300 transition-colors cursor-pointer">
                 <div class="flex flex-col justify-center items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -49,26 +50,25 @@
         {% endif %}
 
         <!-- Logout -->
-        <form id="logout-form" action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="p-3 rounded-lg hover:bg-red-300 transition-colors">
-                <div class="flex flex-col justify-center items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                         class="lucide lucide-circle-power w-6 h-6 text-red-600">
-                        <path d="M12 7v4"/>
-                        <path d="M7.998 9.003a5 5 0 1 0 8-.005"/>
-                        <circle cx="12" cy="12" r="10"/>
-                    </svg>
-                    <span class="text-sm text-red-600">Logout</span>
-                </div>
-            </button>
-        </form>
+
+        <div @click="submitLogoutForm" class="p-3 rounded-lg hover:bg-red-300 transition-colors cursor-pointer">
+            <div class="flex flex-col justify-center items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="lucide lucide-circle-power w-6 h-6 text-red-600">
+                    <path d="M12 7v4"/>
+                    <path d="M7.998 9.003a5 5 0 1 0 8-.005"/>
+                    <circle cx="12" cy="12" r="10"/>
+                </svg>
+                <span class="text-sm text-red-600">Logout</span>
+            </div>
+            <form id="logout-form" action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+            </form>
+        </div>
+
 
     </div>
 
 </div>
 
-
-<!--<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>-->
-<!--<script src="{% static 'js/header.js' %}"></script>-->

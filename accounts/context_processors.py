@@ -26,7 +26,7 @@ def user_json(request):
         "is_staff": user.is_staff,
         "is_superuser": user.is_superuser,
         "role": role,
-        "stage": user.stage.name
+        "stage": user.stage.name if user.stage else 1
     }
 
     return {"user_json": mark_safe(json.dumps(user_data))}
