@@ -4,29 +4,50 @@
 <!-- VUE NAVBAR -->
 
 
-<div class="border-t border-gray-50 rounded fixed bottom-0 left-0 w-full z-40 transform transition-transform duration-500 bg-white shadow-lg">
+<div class="pb-3 border-t border-gray-50 rounded fixed bottom-0 left-0 w-full z-40 transform transition-transform duration-500 bg-white shadow-lg">
     <div class="max-w-2xl mx-auto flex justify-around items-center h-full ">
 
         <!-- Dashboard -->
-        <a href="{% url 'home' %}" class="p-3 rounded-lg hover:bg-green-300 transition-colors">
-            <div class="flex flex-col justify-center items-center">
-                <img src="{% static 'img/icons/beach-chair-summer-svgrepo-com.svg' %}" class="w-6 h-6">
-                <span class="text-sm">Lеžaljke</span>
+        <a href="{% url 'home' %}" class="p-3 rounded-lg transition-colors">
+            <div class="flex flex-col justify-center items-center  ">
+                <!--                <img src="{% static 'img/icons/beach-chair-summer-svgrepo-com.svg' %}" class="w-6 h-6">-->
+
+                <svg viewBox="0 1 511 511.999" class="w-6 h-6 hover:text-[#BB0000]" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor"
+                          d="m498.699219 222.695312c-.015625-.011718-.027344-.027343-.039063-.039062l-208.855468-208.847656c-8.902344-8.90625-20.738282-13.808594-33.328126-13.808594-12.589843 0-24.425781 4.902344-33.332031 13.808594l-208.746093 208.742187c-.070313.070313-.144532.144531-.210938.214844-18.28125 18.386719-18.25 48.21875.089844 66.558594 8.378906 8.382812 19.441406 13.234375 31.273437 13.746093.484375.046876.96875.070313 1.457031.070313h8.320313v153.695313c0 30.417968 24.75 55.164062 55.167969 55.164062h81.710937c8.285157 0 15-6.71875 15-15v-120.5c0-13.878906 11.292969-25.167969 25.171875-25.167969h48.195313c13.878906 0 25.167969 11.289063 25.167969 25.167969v120.5c0 8.28125 6.714843 15 15 15h81.710937c30.421875 0 55.167969-24.746094 55.167969-55.164062v-153.695313h7.71875c12.585937 0 24.421875-4.902344 33.332031-13.8125 18.359375-18.367187 18.367187-48.253906.027344-66.632813zm-21.242188 45.421876c-3.238281 3.238281-7.542969 5.023437-12.117187 5.023437h-22.71875c-8.285156 0-15 6.714844-15 15v168.695313c0 13.875-11.289063 25.164062-25.167969 25.164062h-66.710937v-105.5c0-30.417969-24.746094-55.167969-55.167969-55.167969h-48.195313c-30.421875 0-55.171875 24.75-55.171875 55.167969v105.5h-66.710937c-13.875 0-25.167969-11.289062-25.167969-25.164062v-168.695313c0-8.285156-6.714844-15-15-15h-22.328125c-.234375-.015625-.464844-.027344-.703125-.03125-4.46875-.078125-8.660156-1.851563-11.800781-4.996094-6.679688-6.679687-6.679688-17.550781 0-24.234375.003906 0 .003906-.003906.007812-.007812l.011719-.011719 208.847656-208.839844c3.234375-3.238281 7.535157-5.019531 12.113281-5.019531 4.574219 0 8.875 1.78125 12.113282 5.019531l208.800781 208.796875c.03125.03125.066406.0625.097656.09375 6.644531 6.691406 6.632813 17.539063-.03125 24.207032zm0 0"/>
+                </svg>
+                <!--                <span class="text-sm">Lеžaljke</span>-->
             </div>
         </a>
 
 
         <!-- Analytics -->
         <a v-if="user.role == 'admin' || user.role == 'moderator'" href="{% url 'analytics' %}"
-           class="p-3 rounded-lg hover:bg-green-300 transition-colors">
+           class="p-3">
             <div class="flex flex-col justify-center items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                     class="w-6 h-6 text-black">
-                    <path fill-rule="evenodd"
-                          d="M12.577 4.878a.75.75 0 0 1 .919-.53l4.78 1.281a.75.75 0 0 1 .531.919l-1.281 4.78a.75.75 0 0 1-1.449-.387l.81-3.022a19.407 19.407 0 0 0-5.594 5.203.75.75 0 0 1-1.139.093L7 10.06l-4.72 4.72a.75.75 0 0 1-1.06-1.061l5.25-5.25a.75.75 0 0 1 1.06 0l3.074 3.073a20.923 20.923 0 0 1 5.545-4.931l-3.042-.815a.75.75 0 0 1-.53-.919Z"
-                          clip-rule="evenodd"/>
-                </svg>
-                <span class="text-sm">Grafikoni</span>
+                <!--                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"-->
+                <!--                     class="w-6 h-6 text-black">-->
+                <!--                    <path fill-rule="evenodd"-->
+                <!--                          d="M12.577 4.878a.75.75 0 0 1 .919-.53l4.78 1.281a.75.75 0 0 1 .531.919l-1.281 4.78a.75.75 0 0 1-1.449-.387l.81-3.022a19.407 19.407 0 0 0-5.594 5.203.75.75 0 0 1-1.139.093L7 10.06l-4.72 4.72a.75.75 0 0 1-1.06-1.061l5.25-5.25a.75.75 0 0 1 1.06 0l3.074 3.073a20.923 20.923 0 0 1 5.545-4.931l-3.042-.815a.75.75 0 0 1-.53-.919Z"-->
+                <!--                          clip-rule="evenodd"/>-->
+                <!--                </svg>-->
+                <?xml version="1.0" encoding="iso-8859-1"?>
+                <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                     viewBox="0 0 432 432" style="enable-background:new 0 0 432 432;" xml:space="preserve"
+                     class="w-6 h-6 hover:text-[#BB0000]">
+                    <g>
+                        <g>
+                            <path fill="currentColor" d="M424,384h-24V56c0-13.2-10.8-24-24-24h-64c-13.2,0-24,10.8-24,24v328h-16V168c0-13.2-10.8-24-24-24h-64
+                                c-13.2,0-24,10.8-24,24v216h-16V280c0-13.2-10.8-24-24-24H56c-13.2,0-24,10.8-24,24v104H8c-4.4,0-8,3.6-8,8c0,4.4,3.6,8,8,8h416
+                                c4.4,0,8-3.6,8-8C432,387.6,428.4,384,424,384z M128,384H48V280c0-4.4,3.6-8,8-8h64c4.4,0,8,3.6,8,8V384z M256,384h-80V168
+                                c0-4.4,3.6-8,8-8h64c4.4,0,8,3.6,8,8V384z M384,384h-80V56c0-4.4,3.6-8,8-8h64c4.4,0,8,3.6,8,8V384z"/>
+                        </g>
+                    </g>
+                    </svg>
+
+                <!--                <span class="text-sm">Grafikoni</span>-->
             </div>
         </a>
 
@@ -34,16 +55,18 @@
         {% if not "/analytics/" in request.path %}
         <div v-if="user.role == 'admin' || user.role == 'moderator'">
             <!-- Profit -->
-            <div @click="showRevenue = !showRevenue" class="p-3 rounded-lg hover:bg-green-300 transition-colors cursor-pointer">
+            <div @click="showRevenue = !showRevenue"
+                 class="p-3">
                 <div class="flex flex-col justify-center items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                         class="lucide lucide-circle-dollar-sign w-6 h-6 text-black">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
-                        <path d="M12 18V6"/>
-                    </svg>
-                    <span class="text-sm">Profit</span>
+                    <!--                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"-->
+                    <!--                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"-->
+                    <!--                         class="lucide lucide-circle-dollar-sign w-6 h-6 text-black">-->
+                    <!--                        <circle cx="12" cy="12" r="10"/>-->
+                    <!--                        <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>-->
+                    <!--                        <path d="M12 18V6"/>-->
+                    <!--                    </svg>-->
+                <svg id="Layer_2" enable-background="new 0 0 50 50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hover:text-[#BB0000] cursor-pointer"><g><path fill="currentColor" d="m6.16312 6.51528v3.75c0 .55225.44727 1 1 1h3.75c.55273 0 1-.44775 1-1s-.44727-1-1-1h-1.33081c8.59302-8.39063 22.40308-8.33887 30.9187.17578.39061.39061 1.02343.39064 1.41406 0 .39063-.39063.39063-1.02344 0-1.41406-9.29663-9.29664-24.37988-9.34693-33.75195-.17115v-1.34057c0-.55225-.44727-1-1-1s-1 .44775-1 1z"/><path fill="currentColor" d="m42.83695 44.45278c.55273 0 1-.44775 1-1v-3.75c0-.55225-.44727-1-1-1h-3.75c-.55273 0-1 .44775-1 1s.44727 1 1 1h1.24927c-8.59082 8.41895-22.42334 8.37524-30.94849-.14893-.39063-.39063-1.02344-.39063-1.41406 0s-.39063 1.02344 0 1.41406c4.67871 4.67871 10.82519 7.01807 16.9707 7.01807 6.11255 0 12.22339-2.31873 16.89258-6.94751v1.41431c0 .55224.44726 1 1 1z"/><path fill="currentColor" d="m24.33207 25.92079c.61654.21663 1.36058-.25554 2.21484.90845.57813.78516.49805 1.94971-.18164 2.65137-.40625.41943-.98242.64795-1.52539.63672-.5752-.0083-1.10547-.24609-1.49219-.66992-.37305-.4082-1.00488-.43506-1.41309-.06348-.40723.37305-.43555 1.00537-.06348 1.41309.56812.62085 1.31787 1.04578 2.13086 1.22461v1.64795c0 .55225.44727 1 1 1s1-.44775 1-1v-1.7301c.67358-.1947 1.29492-.54504 1.80078-1.06726 1.36133-1.40576 1.51367-3.65332.35547-5.22803-1.75815-2.39114-3.34176-.98126-4.54395-2.29639-.37598-.41064-.56934-.94092-.54492-1.49414.05148-1.16442 1.05194-2.03666 2.1543-1.98096.55176.02344 1.06348.26221 1.43848.67285.37305.40869 1.00684.43555 1.41309.06299.40723-.37256.43555-1.00537.06348-1.4126-.5769-.63086-1.3208-1.04663-2.13672-1.22363v-1.64697c0-.55225-.44727-1-1-1s-1 .44775-1 1v1.72363c-1.74255.50711-2.8574 2.01852-2.93066 3.71729-.08352 1.89614 1.1525 3.71214 3.26074 4.15453z"/><path fill="currentColor" d="m25.00003 41.04018c8.8457 0 16.04297-7.19678 16.04297-16.04297 0-8.8457-7.19727-16.04248-16.04297-16.04248s-16.04296 7.19678-16.04296 16.04248c0 8.84619 7.19726 16.04297 16.04296 16.04297zm0-30.08545c7.74316 0 14.04297 6.29932 14.04297 14.04248s-6.2998 14.04297-14.04297 14.04297-14.04297-6.2998-14.04297-14.04297 6.29981-14.04248 14.04297-14.04248z"/></g></svg>
+                    <!--                    <span class="text-sm">Profit</span>-->
                 </div>
             </div>
         </div>
@@ -51,16 +74,18 @@
 
         <!-- Logout -->
 
-        <div @click="submitLogoutForm" class="p-3 rounded-lg hover:bg-red-300 transition-colors cursor-pointer">
+        <div @click="submitLogoutForm" class="p-3 ">
             <div class="flex flex-col justify-center items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                     class="lucide lucide-circle-power w-6 h-6 text-red-600">
-                    <path d="M12 7v4"/>
-                    <path d="M7.998 9.003a5 5 0 1 0 8-.005"/>
-                    <circle cx="12" cy="12" r="10"/>
-                </svg>
-                <span class="text-sm text-red-600">Logout</span>
+                <!--                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"-->
+                <!--                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"-->
+                <!--                     class="lucide lucide-circle-power w-6 h-6 text-red-600">-->
+                <!--                    <path d="M12 7v4"/>-->
+                <!--                    <path d="M7.998 9.003a5 5 0 1 0 8-.005"/>-->
+                <!--                    <circle cx="12" cy="12" r="10"/>-->
+                <!--                </svg>-->
+                <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" t="1720180956213" p-id="8343" class="w-6 h-6 hover:text-[#BB0000] cursor-pointer">
+                    <path fill="currentColor" d="m184.552727 768v-512c0-38.539636 31.278545-69.818182 69.818182-69.818182h302.545455v-46.545454h-325.818182c-51.432727 0-93.090909 41.658182-93.090909 93.090909v558.545455c0 51.432727 41.658182 93.090909 93.090909 93.090909h325.818182v-46.545455h-302.545455c-38.586182 0-69.818182-31.278546-69.818182-69.818182zm739.560728-272.477091-164.584727-164.584727c-9.076364-9.076364-23.831273-9.076364-32.907636 0-9.076364 9.076364-9.076364 23.831273 0 32.907636l124.834909 124.834909h-457.448728c-12.846545 0-23.272727 10.426182-23.272727 23.272727s10.426182 23.272727 23.272727 23.272727h457.448727l-124.834909 124.834909c-9.076364 9.076364-9.076364 23.831273 0 32.907636 9.076364 9.076364 23.831273 9.076364 32.907636 0l164.584727-164.584727c9.076364-9.029817 9.076364-23.738181.000001-32.86109z" p-id="8344"/></svg>
+                <!--                <span class="text-sm text-red-600">Logout</span>-->
             </div>
             <form id="logout-form" action="{% url 'logout' %}" method="post">
                 {% csrf_token %}

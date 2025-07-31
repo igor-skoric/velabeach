@@ -55,7 +55,12 @@ module.exports = {
         'grid-cols-11',
       ],
     theme: {
-        extend: {},
+        extend: {
+            fontSize: {
+        // zadržavaš postojeće, ali overriduješ text-sm
+        sm: '13px',
+      },
+        },
     },
     plugins: [
         /**

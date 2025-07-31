@@ -10,7 +10,7 @@
         </button>
 
         <p class="">
-            <span class="font-bold text-xl">[[selectedStage.name]]</span>
+            <span class="font-bold text-md">[[selectedStage.name]]</span>
             <span class="w-8 h-8 inline-flex items-center justify-center rounded-full bg-green-500 text-white font-bold ml-2 transform transition duration-300 hover:rotate-12 shadow">[[selectedCell.label]]</span>
         </p>
 
@@ -23,7 +23,7 @@
                 <!-- Status -->
 
                 <div>
-                    <label class="block mb-1 font-semibold">Status</label>
+                    <label class="block mb-1 text-sm">Status</label>
                     <select @change="onStatusChange" v-model="reservationForm.status"
                             class="w-full border rounded px-3 py-2" required>
                         <option value="unavailable">Zauzeto</option>
