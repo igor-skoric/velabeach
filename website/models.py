@@ -176,7 +176,7 @@ class DailyRevenue(models.Model):
         all = Lounger.objects.count()
         occupancy = self.busy_lounger + self.busy_bed + self.reserved + self.signature
         if occupancy != 0:
-            result = f'{round((occupancy / all) * 100, 2):.2f}'
+            result = f'{round((occupancy / all) * 100, 2):.1f}'
 
         return result
 
