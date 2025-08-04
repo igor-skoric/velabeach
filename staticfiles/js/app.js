@@ -118,6 +118,7 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
               price: 0,
               dateFrom: '',
               dateTo: '',
+              description:''
             },
             logs: [
               'Aplikacija pokrenuta.',
@@ -141,6 +142,9 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                 total_income: "0"
             },
             showRevenue: false,
+            revenueStartDate: new Date().toISOString().split('T')[0],
+            revenueEndDate: new Date().toISOString().split('T')[0],
+
 
             //Notifications
             notification: {
@@ -152,7 +156,7 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
       },
       mounted() {
         this.selectedStage = this.stages.find(stage => stage.symbol == user.stage)
-//        this.fetchRevenue();
+        this.datePickerInitialization();
       },
       methods: {
               toRoman(num) {
@@ -181,6 +185,30 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                     }
                     return result;
                 },
+              datePickerInitialization(){
+                  const startInput = document.getElementById('datepicker-range-start');
+                  const endInput = document.getElementById('datepicker-range-end');
+
+                  // Postavi početnu vrednost direktno u DOM
+                  let today = new Date();
+                  today = this.convertYMDtoMDY(today)
+
+                  this.revenueStartDate = today;
+                  this.revenueEndDate = today;
+
+                  startInput.addEventListener('changeDate', (e) => {
+//                      console.log('Start date changed', e.target.value);
+                      this.revenueStartDate = e.target.value;
+                      this.fetchRevenue()
+                    });
+
+                  endInput.addEventListener('changeDate', (e) => {
+//                      console.log('End date changed', e.target.value);
+                      this.revenueEndDate = e.target.value;
+                      this.fetchRevenue()
+                    });
+              },
+
               generateChairCells(stage, type='first') {
                   const result = [];
                   let totalCells, cols, currentIndex, obstacles;
@@ -310,15 +338,16 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                     throw error;
                   }
                 },
-              async fetchRevenue() {
 
-                  const date = this.currentDate.toISOString().split('T')[0];
-                  const end_date = date;
+              async fetchRevenue() {
+                  const date = this.convertMDYtoYMD(this.revenueStartDate)
+                  const end_date = this.convertMDYtoYMD(this.revenueEndDate)
 
                     try {
 
                       const response = await this.fetchData('api/daily-revenue-by-date/', { date, end_date });
                       this.revenue = response[0];
+//                      console.log(response)
                       return response;
 
                     } catch (e) {
@@ -373,6 +402,7 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                   details: [
                     {
                         price: this.reservationForm.price,
+                        description: this.reservationForm.description,
                     }
                   ]
                 };
@@ -410,11 +440,10 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                   let date_to = new Date(this.reservationForm.date_to);
 
                   if (!confirmed) {
-                    console.log('Korisnik je otkazao čuvanje');
                     return;
                   }
 
-                  if(this.reservationForm.status !== 'reserved'){
+                  if(this.reservationForm.status !== 'reserved' && this.reservationForm.status !== 'signature'){
                     this.reservationForm.date_from = this.currentDate.toISOString().split('T')[0];
                     this.reservationForm.date_to = this.currentDate.toISOString().split('T')[0];
                     date_from = new Date(this.reservationForm.date_from);
@@ -542,7 +571,6 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                 const form = document.getElementById('logout-form');
 
                   if (!confirmed) {
-                    console.log('Korisnik je otkazao čuvanje');
                     return;
                   }
                   if (form) {
@@ -550,7 +578,25 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                   } else {
                     console.warn('Logout form not found');
                   }
-              }
+              },
+              convertYMDtoMDY(date){
+                const formatter = new Intl.DateTimeFormat('en-US', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                });
+
+                const [{ value: month },,{ value: day },,{ value: year }] = formatter.formatToParts(date);
+
+                const formattedDate = `${month}/${day}/${year}`;
+                return formattedDate
+              },
+              convertMDYtoYMD(dateStr) {
+                  const [month, day, year] = dateStr.split('/');
+                  // Vraća format 'YYYY-MM-DD'
+                  return `${year}-${month}-${day}`;
+                }
+,
           },
       computed: {
           formattedDate() {
@@ -560,6 +606,17 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
               month: 'long',
               year: 'numeric',
             });
+          },
+          getUserStages(){
+            let results = [];
+            const stages = this.stages;
+            if (this.user.role == 'admin' || this.user.role == 'moderator'){
+                results = stages
+            }else{
+                let stage = stages.find(stage => stage.symbol == this.user.stage)
+                results.push(stage);
+            }
+            return results;
           }
         },
       watch: {
@@ -575,7 +632,9 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
             if (this.revenue){
                 this.fetchRevenue();
             }
-        }
+        },
+
+
        }
     });
 

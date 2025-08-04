@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .models import Reservation, ReservationLog, ReservationDetail, DailyRevenue
 from django.db import models
 
+
 class ReservationDetailSerializer(serializers.ModelSerializer):
     status_display = serializers.SerializerMethodField(read_only=True)
     user = serializers.CharField(source='user.username', read_only=True)
@@ -10,7 +11,7 @@ class ReservationDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReservationDetail
-        fields = ['id',  'user', 'price', 'status', 'status_display', 'reserved_at', 'user_display']
+        fields = ['id',  'user', 'price', 'status', 'status_display', 'description', 'reserved_at', 'user_display']
 
     def get_status_display(self, obj):
         return obj.get_status_display()
@@ -59,7 +60,7 @@ class ReservationSerializer(serializers.ModelSerializer):
         return reservation
 
     def update(self, instance, validated_data):
-        print('usao u update sta')
+
         new_status = validated_data.get('status', instance.status)
 
         if new_status == instance.status:
@@ -73,8 +74,6 @@ class ReservationSerializer(serializers.ModelSerializer):
         return obj.get_status_display()
 
 
-
-
 class ReservationLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReservationLog
@@ -85,4 +84,4 @@ class ReservationLogSerializer(serializers.ModelSerializer):
 class DailyRevenueSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyRevenue
-        fields = ['date', 'A', 'B', 'C', 'D', 'total_income']
+        fields = ['date', 'A', 'B', 'C', 'D', 'busy_lounger', 'busy_bed', 'reserved', 'signature','occupancy_rate', 'total_income']

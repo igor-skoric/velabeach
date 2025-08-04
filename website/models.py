@@ -73,13 +73,45 @@ class Reservation(models.Model):
             models.UniqueConstraint(fields=['date', 'lounger'], name='unique_date_lounger')
         ]
 
+    STATUS_CHOICES = [
+        ('available', 'Slobodno'),
+        ('unavailable', 'Zauzeto'),
+        ('reserved', 'Rezervisano'),
+        ('signature', 'Potpis'),
+    ]
+
+    @staticmethod
+    def get_user_revenue(date, stage):
+        busy_lounger = 0
+        busy_bed = 0
+        reserved = 0
+        signature = 0
+        reservations = Reservation.objects.filter(date=date, lounger__stage=stage).prefetch_related('details')
+
+        for r in reservations:
+            for d in r.details.all():
+                if d.status == 'unavailable':
+                    if r.lounger.lounger_type.name == 'L':
+                        busy_lounger += 1
+                    else:
+                        busy_bed += 1
+
+                if d.status == 'reserved':
+                    reserved += 1
+
+                if d.status == 'signature':
+                    signature += 1
+
+        return {
+            'busy_lounger': busy_lounger,
+            'busy_bed': busy_bed,
+            'reserved': reserved,
+            'signature': signature
+        }
+
     @property
     def total_price(self):
         return sum(detail.price for detail in self.details.all())
-
-    @property
-    def total_reservations(self):
-        return self.details.exclude(status__in=['available']).count()
 
     @staticmethod
     def check_unavailability(lounger, date, end_date):
@@ -101,6 +133,7 @@ class ReservationDetail(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='available')
     price = models.PositiveIntegerField(default=0)
+    description = models.TextField(null=True, blank=True)
     reserved_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -126,19 +159,52 @@ class DailyRevenue(models.Model):
     B = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     C = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     D = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    busy_lounger = models.IntegerField(default=0)
+    busy_bed = models.IntegerField(default=0)
+    reserved = models.IntegerField(default=0)
+    signature = models.IntegerField(default=0)
+
     total_income = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return f"{self.date} - {self.total_income} EUR"
 
+    @property
+    def occupancy_rate(self):
+        result = 0
+        all = Lounger.objects.count()
+        occupancy = self.busy_lounger + self.busy_bed + self.reserved + self.signature
+        if occupancy != 0:
+            result = f'{round((occupancy / all) * 100, 2):.2f}'
+
+        return result
+
     def update_total(self):
-        reservations = Reservation.objects.filter(date=self.date)\
-            .select_related('lounger__stage')\
+        reservations = Reservation.objects.filter(date=self.date) \
+            .select_related('lounger__stage') \
             .prefetch_related('details')
 
+        busy_lounger = 0
+        busy_bed = 0
+        reserved = 0
+        signature = 0
         grouped_totals = defaultdict(float)
 
         for r in reservations:
+            for detail in r.details.all():
+                if detail.status == 'unavailable':
+                    if r.lounger.lounger_type.name == 'L':
+                        busy_lounger += 1
+                    else:
+                        busy_bed += 1
+
+                if detail.status == 'reserved':
+                    reserved += 1
+
+                if detail.status == 'signature':
+                    signature += 1
+
             stage_name = r.lounger.stage.name.upper()  # očekujemo 'A', 'B', itd.
             grouped_totals[stage_name] += r.total_price
 
@@ -148,6 +214,12 @@ class DailyRevenue(models.Model):
         self.C = grouped_totals.get('C', 0)
         self.D = grouped_totals.get('D', 0)
 
+        self.busy_lounger = busy_lounger
+        self.busy_bed = busy_bed
+        self.reserved = reserved
+        self.signature = signature
+
         self.total_income = sum(grouped_totals.values())
 
-        self.save(update_fields=['A', 'B', 'C', 'D', 'total_income'])
+        self.save(
+            update_fields=['A', 'B', 'C', 'D', 'reserved', 'busy_lounger', 'busy_bed', 'signature', 'total_income'])

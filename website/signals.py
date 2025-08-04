@@ -56,21 +56,6 @@ def log_reservation_update(sender, instance, **kwargs):
             new_value=json.dumps(changes),  # sve promene u jednom JSON stringu
         )
 
-    # update DailyRevenue ako se status, cena ili datum promeni
-    # if any(f in changes for f in ['total_price', 'date']):
-    #
-    #     # Ažuriraj za stari datum ako se promenio
-    #     if 'date' in changes:
-    #         old_date = changes['date']['old']
-    #         try:
-    #             old_rev = DailyRevenue.objects.get(date=old_date)
-    #             old_rev.update_total()
-    #         except DailyRevenue.DoesNotExist:
-    #             pass
-    #     # Ažuriraj za novi datum
-    #     revenue, _ = DailyRevenue.objects.get_or_create(date=instance.date)
-    #     revenue.update_total()
-
 
 @receiver(post_save, sender=ReservationDetail)
 def update_revenue_on_detail_save(sender, instance, created, **kwargs):

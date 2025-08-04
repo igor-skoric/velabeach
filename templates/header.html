@@ -22,38 +22,38 @@
 
 
         <!-- Analytics -->
-        <a v-if="user.role == 'admin' || user.role == 'moderator'" href="{% url 'analytics' %}"
-           class="p-3">
-            <div class="flex flex-col justify-center items-center">
-                <!--                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"-->
-                <!--                     class="w-6 h-6 text-black">-->
-                <!--                    <path fill-rule="evenodd"-->
-                <!--                          d="M12.577 4.878a.75.75 0 0 1 .919-.53l4.78 1.281a.75.75 0 0 1 .531.919l-1.281 4.78a.75.75 0 0 1-1.449-.387l.81-3.022a19.407 19.407 0 0 0-5.594 5.203.75.75 0 0 1-1.139.093L7 10.06l-4.72 4.72a.75.75 0 0 1-1.06-1.061l5.25-5.25a.75.75 0 0 1 1.06 0l3.074 3.073a20.923 20.923 0 0 1 5.545-4.931l-3.042-.815a.75.75 0 0 1-.53-.919Z"-->
-                <!--                          clip-rule="evenodd"/>-->
-                <!--                </svg>-->
-                <?xml version="1.0" encoding="iso-8859-1"?>
-                <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
-                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                     viewBox="0 0 432 432" style="enable-background:new 0 0 432 432;" xml:space="preserve"
-                     class="w-6 h-6 hover:text-[#BB0000]">
-                    <g>
-                        <g>
-                            <path fill="currentColor" d="M424,384h-24V56c0-13.2-10.8-24-24-24h-64c-13.2,0-24,10.8-24,24v328h-16V168c0-13.2-10.8-24-24-24h-64
-                                c-13.2,0-24,10.8-24,24v216h-16V280c0-13.2-10.8-24-24-24H56c-13.2,0-24,10.8-24,24v104H8c-4.4,0-8,3.6-8,8c0,4.4,3.6,8,8,8h416
-                                c4.4,0,8-3.6,8-8C432,387.6,428.4,384,424,384z M128,384H48V280c0-4.4,3.6-8,8-8h64c4.4,0,8,3.6,8,8V384z M256,384h-80V168
-                                c0-4.4,3.6-8,8-8h64c4.4,0,8,3.6,8,8V384z M384,384h-80V56c0-4.4,3.6-8,8-8h64c4.4,0,8,3.6,8,8V384z"/>
-                        </g>
-                    </g>
-                    </svg>
+<!--        <a v-if="user.role == 'admin' || user.role == 'moderator'" href="{% url 'analytics' %}"-->
+<!--           class="p-3">-->
+<!--            <div class="flex flex-col justify-center items-center">-->
+<!--                &lt;!&ndash;                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"&ndash;&gt;-->
+<!--                &lt;!&ndash;                     class="w-6 h-6 text-black">&ndash;&gt;-->
+<!--                &lt;!&ndash;                    <path fill-rule="evenodd"&ndash;&gt;-->
+<!--                &lt;!&ndash;                          d="M12.577 4.878a.75.75 0 0 1 .919-.53l4.78 1.281a.75.75 0 0 1 .531.919l-1.281 4.78a.75.75 0 0 1-1.449-.387l.81-3.022a19.407 19.407 0 0 0-5.594 5.203.75.75 0 0 1-1.139.093L7 10.06l-4.72 4.72a.75.75 0 0 1-1.06-1.061l5.25-5.25a.75.75 0 0 1 1.06 0l3.074 3.073a20.923 20.923 0 0 1 5.545-4.931l-3.042-.815a.75.75 0 0 1-.53-.919Z"&ndash;&gt;-->
+<!--                &lt;!&ndash;                          clip-rule="evenodd"/>&ndash;&gt;-->
+<!--                &lt;!&ndash;                </svg>&ndash;&gt;-->
+<!--                <?xml version="1.0" encoding="iso-8859-1"?>-->
+<!--                &lt;!&ndash; Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  &ndash;&gt;-->
+<!--                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"-->
+<!--                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"-->
+<!--                     viewBox="0 0 432 432" style="enable-background:new 0 0 432 432;" xml:space="preserve"-->
+<!--                     class="w-6 h-6 hover:text-[#BB0000]">-->
+<!--                    <g>-->
+<!--                        <g>-->
+<!--                            <path fill="currentColor" d="M424,384h-24V56c0-13.2-10.8-24-24-24h-64c-13.2,0-24,10.8-24,24v328h-16V168c0-13.2-10.8-24-24-24h-64-->
+<!--                                c-13.2,0-24,10.8-24,24v216h-16V280c0-13.2-10.8-24-24-24H56c-13.2,0-24,10.8-24,24v104H8c-4.4,0-8,3.6-8,8c0,4.4,3.6,8,8,8h416-->
+<!--                                c4.4,0,8-3.6,8-8C432,387.6,428.4,384,424,384z M128,384H48V280c0-4.4,3.6-8,8-8h64c4.4,0,8,3.6,8,8V384z M256,384h-80V168-->
+<!--                                c0-4.4,3.6-8,8-8h64c4.4,0,8,3.6,8,8V384z M384,384h-80V56c0-4.4,3.6-8,8-8h64c4.4,0,8,3.6,8,8V384z"/>-->
+<!--                        </g>-->
+<!--                    </g>-->
+<!--                    </svg>-->
 
-                <!--                <span class="text-sm">Grafikoni</span>-->
-            </div>
-        </a>
+<!--                &lt;!&ndash;                <span class="text-sm">Grafikoni</span>&ndash;&gt;-->
+<!--            </div>-->
+<!--        </a>-->
 
 
         {% if not "/analytics/" in request.path %}
-        <div v-if="user.role == 'admin' || user.role == 'moderator'">
+
             <!-- Profit -->
             <div @click="showRevenue = !showRevenue"
                  class="p-3">
@@ -69,7 +69,7 @@
                     <!--                    <span class="text-sm">Profit</span>-->
                 </div>
             </div>
-        </div>
+
         {% endif %}
 
         <!-- Logout -->

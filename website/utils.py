@@ -1,6 +1,7 @@
 from .models import Lounger, Stage, LoungerType
+from django.contrib.auth import get_user_model
 
-
+User = get_user_model()
 
 
 def create_loungers_stage_A(stage='A'):
@@ -27,15 +28,16 @@ def create_loungers_stage_A(stage='A'):
             return
 
         created_count = 0
-        for position in positions:
-            lounger, created = Lounger.objects.get_or_create(
-                stage=stage,
-                lounger_type=lounger_type,
-                position=position,
-                defaults={"is_obstacle": False}
-            )
-            if created:
-                created_count += 1
+
+        # for position in positions:
+        #     lounger, created = Lounger.objects.get_or_create(
+        #         stage=stage,
+        #         lounger_type=lounger_type,
+        #         position=position,
+        #         defaults={"is_obstacle": False}
+        #     )
+        #     if created:
+        #         created_count += 1
 
     print(f"Kreirano novih ležaljki: {created_count}")
 
@@ -142,3 +144,15 @@ def create_loungers_stage_D(stage='D'):
                 created_count += 1
 
     print(f"Kreirano novih ležaljki: {created_count}")
+
+
+def check_user_role(user):
+    if not user:
+        return "anonymous"
+
+    if user.is_superuser:
+        return "admin"
+    elif user.is_staff:
+        return "moderator"
+    else:
+        return "user"

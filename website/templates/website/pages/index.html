@@ -10,7 +10,7 @@
 <div id="app" class="max-w-2xl mx-auto">
 
 
-    <div class="space-y-8 px-2 mt-10 ">
+    <div class="space-y-8 px-2 pt-2 ">
         <!--    U pocetku je selectedStage null pa mora ovo da ne bi ulazio u gresku-->
         <div v-if="selectedStage">
             <div class="relative gap-2">
@@ -33,9 +33,9 @@
                 <div class="flex justify-end flex gap-1">
                     <h2
                             @click="changeStage(stage)"
-                            v-for="(stage, index) in stages"
+                            v-for="(stage, index) in getUserStages"
                             :key="index"
-                            :class="['px-4 py-1 rounded text-sm cursor-pointer',selectedStage === stage ? 'bg-red-700 text-white ' : 'border text-black hover:bg-red-700 hover:text-white']">
+                            :class="['px-4 py-1 rounded text-sm cursor-pointer', selectedStage === stage ? 'bg-red-700 text-white ' : 'border text-black hover:bg-red-700 hover:text-white']">
                         [[stage.symbol]]
                     </h2>
                 </div>

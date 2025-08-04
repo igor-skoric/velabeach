@@ -11,6 +11,8 @@ from datetime import timedelta, datetime
 from django.db.models import Count, Prefetch
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
+from .utils import check_user_role
+from decimal import Decimal
 
 import json
 import logging
@@ -101,7 +103,8 @@ class ReservationCreateAPIView(APIView):
         if unavailable and reservation_status != 'available':
             return Response({'error': 'Ležaljka je zauzeta.'}, status=status.HTTP_409_CONFLICT)
 
-        for index, date in enumerate(date_list):
+        for reservation_index, date in enumerate(date_list):
+
             reservation = Reservation.objects.filter(lounger_id=lounger.id, date=date).first()
 
             if reservation:
@@ -114,7 +117,11 @@ class ReservationCreateAPIView(APIView):
                 reservation.save()
 
                 # Ako postoji rezervacija, dodaj samo nove detalje
-                for detail_data in details_data:
+                for index, detail_data in enumerate(details_data):
+                    # Izbaciti dodavanje cene ako ima vise datuma za 1 rezervaciju u 1 requestu
+                    if reservation_index != 0:
+                        detail_data.pop('price', 0)
+
                     ReservationDetail.objects.create(
                         reservation=reservation,
                         user=user,
@@ -138,7 +145,11 @@ class ReservationCreateAPIView(APIView):
                 )
 
                 # DODAVANJE DETALJA
-                for detail_data in details_data:
+                for index, detail_data in enumerate(details_data):
+                    # Izbaciti dodavanje cene ako ima vise datuma za 1 rezervaciju u 1 requestu
+                    if reservation_index != 0:
+                        detail_data.pop('price', 0)
+
                     ReservationDetail.objects.create(
                         reservation=reservation,
                         user=user,
@@ -183,6 +194,8 @@ class ReservationDetailViewSet(viewsets.ModelViewSet):
 
 
 class DailyRevenueByDateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         date = request.query_params.get('date')
         end_date = request.query_params.get('end_date')
@@ -192,17 +205,48 @@ class DailyRevenueByDateAPIView(APIView):
 
         revenue = DailyRevenue.objects.filter(date__range=[date, end_date]).order_by('date')
 
-        if revenue:
+        if revenue.exists():
             serializer = DailyRevenueSerializer(revenue, many=True)
         else:
-            # Prazan odgovor ako ne postoji podatak za taj datum
             empty_revenue = DailyRevenue(
                 date=date,
-                A=0, B=0, C=0, D=0, total_income=0
+                A=0, B=0, C=0, D=0, busy_lounger=0, busy_bed=0, reserved=0, signature=0, total_income=0
             )
             serializer = DailyRevenueSerializer([empty_revenue], many=True)
 
-        return Response(serializer.data)
+        data = serializer.data
+
+        user_stage = getattr(request.user, 'stage', 'A')
+        role = check_user_role(request.user)
+
+        # Ako je običan korisnik, vrati po datumu samo njegov stage
+        if role == 'user':
+            statistika = Reservation.get_user_revenue(date, user_stage)
+
+            # Saberi vrednosti za njegov stage
+            total = 0
+            for d in data:
+                total += Decimal(d.get(f'{user_stage}', '0'))
+
+            return Response([{
+                'total_income': total,
+                f'{user_stage}': total,
+                **statistika
+            }])
+
+        # Ako je admin ili moderator, saberi sve vrednosti po poljima
+        keys_to_sum = ['A', 'B', 'C', 'D', 'busy_lounger', 'busy_bed', 'reserved', 'signature', 'total_income', 'occupancy_rate']
+
+        result = {key: 0 for key in keys_to_sum}
+
+        for d in data:
+            for key in keys_to_sum:
+                result[key] += Decimal(d.get(key, '0'))
+
+        result['occupancy_rate'] = result['occupancy_rate'] / len(data)
+
+        aggregated_data = {key: f"{value}" for key, value in result.items()}
+        return Response([aggregated_data])
 
 
 class ReservationDetailDeleteAPIView(APIView):
