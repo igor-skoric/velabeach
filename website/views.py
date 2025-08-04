@@ -243,7 +243,7 @@ class DailyRevenueByDateAPIView(APIView):
             for key in keys_to_sum:
                 result[key] += Decimal(d.get(key, '0'))
 
-        result['occupancy_rate'] = result['occupancy_rate'] / len(data)
+        result['occupancy_rate'] = round(result['occupancy_rate'] / len(data), 2)
 
         aggregated_data = {key: f"{value}" for key, value in result.items()}
         return Response([aggregated_data])
