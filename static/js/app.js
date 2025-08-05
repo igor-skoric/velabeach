@@ -142,8 +142,8 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                 total_income: "0"
             },
             showRevenue: false,
-            revenueStartDate: new Date().toISOString().split('T')[0],
-            revenueEndDate: new Date().toISOString().split('T')[0],
+            revenueStartDate: this.formatDateDDMMYYYY(new Date()),
+            revenueEndDate: this.formatDateDDMMYYYY(new Date()),
 
 
             //Notifications
@@ -186,29 +186,32 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                     return result;
                 },
               datePickerInitialization(){
-                  const startInput = document.getElementById('datepicker-range-start');
-                  const endInput = document.getElementById('datepicker-range-end');
+                    const startInput = document.getElementById('startDate');
+                    const endInput = document.getElementById('endDate');
 
-                  // Postavi početnu vrednost direktno u DOM
-                  let today = new Date();
-                  today = this.convertYMDtoMDY(today)
+                    // Inicijalizuj oba datepickera
+                    new Datepicker(startInput, {
+                      format: 'dd/mm/yyyy',
+                      autohide: true,
+                      range: true
+                    });
 
-                  this.revenueStartDate = today;
-                  this.revenueEndDate = today;
+                    new Datepicker(endInput, {
+                      format: 'dd/mm/yyyy',
+                      autohide: true
+                    });
 
-                  startInput.addEventListener('changeDate', (e) => {
-//                      console.log('Start date changed', e.target.value);
+                    // Event listeneri za promenu datuma
+                    startInput.addEventListener('changeDate', (e) => {
                       this.revenueStartDate = e.target.value;
                       this.fetchRevenue()
                     });
 
-                  endInput.addEventListener('changeDate', (e) => {
-//                      console.log('End date changed', e.target.value);
+                    endInput.addEventListener('changeDate', (e) => {
                       this.revenueEndDate = e.target.value;
                       this.fetchRevenue()
                     });
               },
-
               generateChairCells(stage, type='first') {
                   const result = [];
                   let totalCells, cols, currentIndex, obstacles;
@@ -338,10 +341,9 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                     throw error;
                   }
                 },
-
               async fetchRevenue() {
-                  const date = this.convertMDYtoYMD(this.revenueStartDate)
-                  const end_date = this.convertMDYtoYMD(this.revenueEndDate)
+                  const date = this.convertDDMMYYYYtoYMD(this.revenueStartDate)
+                  const end_date = this.convertDDMMYYYYtoYMD(this.revenueEndDate)
 
                     try {
 
@@ -579,24 +581,17 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                     console.warn('Logout form not found');
                   }
               },
-              convertYMDtoMDY(date){
-                const formatter = new Intl.DateTimeFormat('en-US', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit'
-                });
-
-                const [{ value: month },,{ value: day },,{ value: year }] = formatter.formatToParts(date);
-
-                const formattedDate = `${month}/${day}/${year}`;
-                return formattedDate
+              convertDDMMYYYYtoYMD(dateStr) {
+                  // očekuje dd/mm/yyyy
+                  const [day, month, year] = dateStr.split('/');
+                  return `${year}-${month}-${day}`;  // ispravan redosled
+                },
+              formatDateDDMMYYYY(date) {
+                const d = date.getDate().toString().padStart(2, '0');
+                const m = (date.getMonth() + 1).toString().padStart(2, '0');
+                const y = date.getFullYear();
+                return `${d}/${m}/${y}`;
               },
-              convertMDYtoYMD(dateStr) {
-                  const [month, day, year] = dateStr.split('/');
-                  // Vraća format 'YYYY-MM-DD'
-                  return `${year}-${month}-${day}`;
-                }
-,
           },
       computed: {
           formattedDate() {
@@ -629,6 +624,7 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
 //          this.fetchRevenue();
         },
         showRevenue(){
+            console.log(this.revenue)
             if (this.revenue){
                 this.fetchRevenue();
             }

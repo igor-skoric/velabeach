@@ -155,17 +155,17 @@ class ReservationLog(models.Model):
 
 class DailyRevenue(models.Model):
     date = models.DateField(unique=True)
-    A = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    B = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    C = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    D = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    A = models.IntegerField(default=0)
+    B = models.IntegerField(default=0)
+    C = models.IntegerField(default=0)
+    D = models.IntegerField(default=0)
 
     busy_lounger = models.IntegerField(default=0)
     busy_bed = models.IntegerField(default=0)
     reserved = models.IntegerField(default=0)
     signature = models.IntegerField(default=0)
 
-    total_income = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_income = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.date} - {self.total_income} EUR"

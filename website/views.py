@@ -226,7 +226,7 @@ class DailyRevenueByDateAPIView(APIView):
             # Saberi vrednosti za njegov stage
             total = 0
             for d in data:
-                total += Decimal(d.get(f'{user_stage}', '0'))
+                total += int(d.get(f'{user_stage}', '0'))
 
             return Response([{
                 'total_income': total,
@@ -243,7 +243,7 @@ class DailyRevenueByDateAPIView(APIView):
             for key in keys_to_sum:
                 result[key] += Decimal(d.get(key, '0'))
 
-        result['occupancy_rate'] = round(result['occupancy_rate'] / len(data), 2)
+        result['occupancy_rate'] = int(result['occupancy_rate'] / len(data))
 
         aggregated_data = {key: f"{value}" for key, value in result.items()}
         return Response([aggregated_data])

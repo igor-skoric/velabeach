@@ -127,11 +127,11 @@
 
 <!--<div v-if="user.role == 'admin' || user.role == 'moderator'">-->
 
-<!-- Menu -->
+<!-- Menu Statistika-->
 <div class="flex flex-col justify-between ">
     <div
-            class="overflow-y-auto max-h-screen scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-xl rounded-l-xl p-6 z-40 transition-transform duration-300 ease-in-out"
-            :class="showRevenue ? 'translate-x-0' : 'translate-x-full'"
+            class="pb-24 overflow-y-auto max-h-screen scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-xl rounded-l-xl p-6 z-40 transition-transform duration-300 ease-in-out will-change-transform"
+            :class="showRevenue ? 'translate-x-0' : 'translate-x-[100%]'"
     >
         <div class="">
             <h2 class="text-center mb-6 text-xl font-semibold text-gray-800">Statistika</h2>
@@ -139,42 +139,38 @@
             <div class="mt-1 flex justify-between text-2xl font-semibold text-gray-800">
                 <span>[[ revenue.total_income ]] EUR</span>
             </div>
+
             <!-- Date picker -->
-
             <div class="mt-5">
-                <div id="date-range-picker" date-rangepicker class="flex items-center"
+                <div class="flex items-center"
                      :class="user.role === 'admin' ? 'block' : 'hidden'">
-                    <div class="relative">
-                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
-                                 xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                            </svg>
-                        </div>
+                    <!-- Datum OD -->
+                    <div class="mb-4">
+                        <input
+                                type="text"
+                                id="startDate"
+                                class="datepicker-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                placeholder="dd/mm/yyyy"
+                                readonly
+                        />
+                    </div>
+                    <span class="mx-4 text-gray-500">do</span>
+                    <!-- Datum DO -->
+                    <div class="mb-4">
+                        <input
+                                type="text"
+                                id="endDate"
+                                class="datepicker-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                placeholder="dd/mm/yyyy"
+                                readonly
+                        />
+                    </div>
 
-                        <input value="revenueStartDate" id="datepicker-range-start" readonly inputmode="none"
-                               name="start" type="text"
-                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
-                               placeholder="Select date start"
-                               datepicker-format="yyyy-mm-dd">
-                    </div>
-                    <span class="mx-4 text-gray-500">to</span>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500 " aria-hidden="true"
-                                 xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                            </svg>
-                        </div>
-                        <input id="datepicker-range-end" readonly inputmode="none" name="end" type="text"
-                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 "
-                               placeholder="Select date end"
-                               datepicker-format="yyyy-mm-dd">
-                    </div>
+
                 </div>
             </div>
-            <div class="">
 
+            <div>
                 <div v-for="(stage, index) in getUserStages" :key="index" class="flex justify-between py-2">
                     <span class="text-gray-600">[[stage.name]]</span>
                     <span class="text-gray-900">[[ revenue[stage.symbol] ]] EUR</span>
