@@ -1,7 +1,8 @@
 # serializers.py
 from rest_framework import serializers
-from .models import Reservation, ReservationLog, ReservationDetail, DailyRevenue
+from .models import Reservation, ReservationLog, ReservationDetail, DailyRevenue, Lounger
 from django.db import models
+from .utils import count_loungers
 
 
 class ReservationDetailSerializer(serializers.ModelSerializer):
@@ -82,6 +83,23 @@ class ReservationLogSerializer(serializers.ModelSerializer):
 
 
 class DailyRevenueSerializer(serializers.ModelSerializer):
+    total_beds = serializers.SerializerMethodField()
+    total_loungers = serializers.SerializerMethodField()
+
     class Meta:
         model = DailyRevenue
-        fields = ['date', 'A', 'B', 'C', 'D', 'busy_lounger', 'busy_bed', 'reserved', 'signature','occupancy_rate', 'total_income']
+        fields = ['date', 'A', 'B', 'C', 'D', 'busy_lounger', 'busy_bed', 'signature', 'occupancy_rate', 'total_income', 'reserved_lounger', 'reserved_bed', 'total_beds', 'total_loungers']
+
+    def get_total_beds(self, obj):
+        user = self.context['request'].user
+
+        if user.is_superuser or getattr(user, "role", None) == "moderator":
+            return count_loungers(lounger_type="B")
+        return count_loungers(stage_name=user.stage.name if user.stage else "A", lounger_type="B")
+
+    def get_total_loungers(self, obj):
+        user = self.context['request'].user
+
+        if user.is_superuser or getattr(user, "role", None) == "moderator":
+            return count_loungers(lounger_type="L")
+        return count_loungers(stage_name=user.stage.name if user.stage else "A", lounger_type="L")

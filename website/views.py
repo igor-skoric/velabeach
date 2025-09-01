@@ -130,7 +130,7 @@ class ReservationCreateAPIView(APIView):
                     )
 
                 serializer = ReservationSerializer(reservation, context={'request': request})
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                # return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 if reservation_status == 'available':
                     return Response({'error': 'Status je vеć dostupan.'}, status=status.HTTP_409_CONFLICT)
@@ -206,13 +206,13 @@ class DailyRevenueByDateAPIView(APIView):
         revenue = DailyRevenue.objects.filter(date__range=[date, end_date]).order_by('date')
 
         if revenue.exists():
-            serializer = DailyRevenueSerializer(revenue, many=True)
+            serializer = DailyRevenueSerializer(revenue, many=True, context={'request': request})
         else:
             empty_revenue = DailyRevenue(
                 date=date,
                 A=0, B=0, C=0, D=0, busy_lounger=0, busy_bed=0, reserved=0, signature=0, total_income=0
             )
-            serializer = DailyRevenueSerializer([empty_revenue], many=True)
+            serializer = DailyRevenueSerializer([empty_revenue], many=True, context={'request': request})
 
         data = serializer.data
 
@@ -235,7 +235,7 @@ class DailyRevenueByDateAPIView(APIView):
             }])
 
         # Ako je admin ili moderator, saberi sve vrednosti po poljima
-        keys_to_sum = ['A', 'B', 'C', 'D', 'busy_lounger', 'busy_bed', 'reserved', 'signature', 'total_income', 'occupancy_rate']
+        keys_to_sum = ['A', 'B', 'C', 'D', 'busy_lounger', 'busy_bed', 'reserved', 'signature', 'total_income', 'occupancy_rate', 'reserved_lounger', 'reserved_bed', 'total_beds', 'total_loungers']
 
         result = {key: 0 for key in keys_to_sum}
 
@@ -244,6 +244,8 @@ class DailyRevenueByDateAPIView(APIView):
                 result[key] += Decimal(d.get(key, '0'))
 
         result['occupancy_rate'] = int(result['occupancy_rate'] / len(data))
+        result['total_beds'] = result['total_beds']
+        result['total_loungers'] = result['total_loungers']
 
         aggregated_data = {key: f"{value}" for key, value in result.items()}
         return Response([aggregated_data])

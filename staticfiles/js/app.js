@@ -99,13 +99,13 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                   startingPosition: 1,
                   total: 66,
                   cols: 10,
-                  obstacles: [9,19,68, 69],
+                  obstacles: [9,19,68,69],
                 },
                 chair2: {
                   startingPosition: 63,
-                  total: 26,
+                  total: 23,
                   cols: 9,
-                  obstacles: [8],
+                  obstacles: [7,8,17],
                 }
               },
             ],
@@ -509,7 +509,7 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
               async deleteDetails(id){
                   const confirmed = await this.openDialog('delete');
                   if (!confirmed) {
-                    console.log('Korisnik je otkazao brisanje');
+//                    console.log('Korisnik je otkazao brisanje');
                     return;
                   }
                   try {
@@ -624,7 +624,6 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
 //          this.fetchRevenue();
         },
         showRevenue(){
-            console.log(this.revenue)
             if (this.revenue){
                 this.fetchRevenue();
             }

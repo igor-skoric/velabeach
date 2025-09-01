@@ -130,7 +130,7 @@
 <!-- Menu Statistika-->
 <div class="flex flex-col justify-between ">
     <div
-            class="pb-24 overflow-y-auto max-h-screen scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-xl rounded-l-xl p-6 z-40 transition-transform duration-300 ease-in-out will-change-transform"
+            class="pb-24 overflow-y-auto max-h-screen scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-xl rounded-l-xl p-4 z-40 transition-transform duration-300 ease-in-out will-change-transform"
             :class="showRevenue ? 'translate-x-0' : 'translate-x-[100%]'"
     >
         <div class="">
@@ -177,20 +177,38 @@
                 </div>
 
             </div>
-            <div class="mt-5 grid grid-cols-2 items-center gap-5">
-                <div class="flex flex-col justify-center  rounded-xl bg-gray-100 p-5">
+            <div class="mt-5 grid grid-cols-2 items-center gap-2">
+                <div class="flex flex-col justify-center  rounded-xl bg-gray-100 p-4">
                     <span class="text-sm text-gray-600">Izdato ležaljki</span>
                     <span class="text-4xl ">[[revenue.busy_lounger]]</span>
                 </div>
-                <div class="flex flex-col justify-center  rounded-xl bg-gray-100 p-5">
-                    <span class="text-sm text-gray-600">Izdato baldahina</span>
-                    <span class="text-4xl ">[[revenue.busy_bed]]</span>
+                <div v-if="user && (user.stage === 'A' || user.stage === 'B')">
+                    <div class="flex flex-col justify-center  rounded-xl bg-gray-100 p-4">
+                        <span class="text-sm text-gray-600">Izdato baldahina</span>
+                        <span class="text-4xl ">[[revenue.busy_bed]]</span>
+                    </div>
                 </div>
-                <div class="flex flex-col justify-center  rounded-xl bg-gray-100 p-5">
-                    <span class="text-sm text-gray-600">Broj rezervacija</span>
-                    <span class="text-4xl ">[[revenue.reserved]]</span>
+                <div class="flex flex-col justify-center  rounded-xl bg-gray-100 p-4">
+                    <span class="text-sm text-gray-600">Rez. ležaljki</span>
+                    <span class="text-4xl ">[[revenue.reserved_lounger]]</span>
                 </div>
-                <div class="flex flex-col justify-center  rounded-xl bg-gray-100 p-5">
+                <div v-if="user && (user.stage === 'A' || user.stage === 'B')">
+                    <div class="flex flex-col justify-center  rounded-xl bg-gray-100 p-4">
+                        <span class="text-sm text-gray-600">Rez. baldahina</span>
+                        <span class="text-4xl ">[[revenue.reserved_bed]]</span>
+                    </div>
+                </div>
+                <div class="flex flex-col justify-center  rounded-xl bg-gray-100 p-4">
+                    <span class="text-sm text-gray-600">Ukupno ležaljki</span>
+                    <span class="text-4xl ">[[revenue.total_loungers]]</span>
+                </div>
+                <div v-if="user && (user.stage === 'A' || user.stage === 'B')">
+                    <div class="flex flex-col justify-center  rounded-xl bg-gray-100 p-4">
+                        <span class="text-sm text-gray-600">Ukupno baldahina</span>
+                        <span class="text-4xl ">[[revenue.total_beds]]</span>
+                    </div>
+                </div>
+                <div class="flex flex-col justify-center  rounded-xl bg-gray-100 p-4">
                     <span class="text-sm text-gray-600">Potpis</span>
                     <span class="text-4xl ">[[revenue.signature]]</span>
                 </div>

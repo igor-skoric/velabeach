@@ -1,4 +1,4 @@
-from .models import Lounger, Stage, LoungerType
+from .models import Stage, LoungerType
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -29,15 +29,6 @@ def create_loungers_stage_A(stage='A'):
 
         created_count = 0
 
-        # for position in positions:
-        #     lounger, created = Lounger.objects.get_or_create(
-        #         stage=stage,
-        #         lounger_type=lounger_type,
-        #         position=position,
-        #         defaults={"is_obstacle": False}
-        #     )
-        #     if created:
-        #         created_count += 1
 
     print(f"Kreirano novih ležaljki: {created_count}")
 
@@ -66,6 +57,7 @@ def create_loungers_stage_B(stage='B'):
 
         created_count = 0
         for position in positions:
+            from .models import Lounger
             lounger, created = Lounger.objects.get_or_create(
                 stage=stage,
                 lounger_type=lounger_type,
@@ -100,6 +92,7 @@ def create_loungers_stage_C(stage='C'):
 
         created_count = 0
         for position in positions:
+            from .models import Lounger
             lounger, created = Lounger.objects.get_or_create(
                 stage=stage,
                 lounger_type=lounger_type,
@@ -134,6 +127,7 @@ def create_loungers_stage_D(stage='D'):
 
         created_count = 0
         for position in positions:
+            from .models import Lounger
             lounger, created = Lounger.objects.get_or_create(
                 stage=stage,
                 lounger_type=lounger_type,
@@ -156,3 +150,23 @@ def check_user_role(user):
         return "moderator"
     else:
         return "user"
+
+
+def count_loungers(stage_name: str = None, lounger_type: str = "L") -> int:
+    """
+    Vrati broj kreveta ili ležaljki za određeni stage.
+    Ako stage_name nije prosleđen -> računa za sve stage-ove.
+
+    :param stage_name: npr. "A", "B", "C", "D"
+    :param lounger_type: "B" za krevete, "L" za ležaljke
+    """
+    from .models import Lounger
+    qs = Lounger.objects.filter(
+        lounger_type__name=lounger_type,
+        is_obstacle=False
+    )
+
+    if stage_name:
+        qs = qs.filter(stage__name=stage_name)
+
+    return qs.count()

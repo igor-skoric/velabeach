@@ -86,6 +86,8 @@ class Reservation(models.Model):
         busy_bed = 0
         reserved = 0
         signature = 0
+        reserved_lounger = 0
+        reserved_bed = 0
         reservations = Reservation.objects.filter(date=date, lounger__stage=stage).prefetch_related('details')
 
         for r in reservations:
@@ -97,16 +99,29 @@ class Reservation(models.Model):
                         busy_bed += 1
 
                 if d.status == 'reserved':
+                    if r.lounger.lounger_type.name == 'L':
+                        reserved_lounger += 1
+                    else:
+                        reserved_bed += 1
+
+                if d.status == 'reserved':
                     reserved += 1
 
                 if d.status == 'signature':
                     signature += 1
+        from .utils import count_loungers
+        total_beds = count_loungers(stage_name=stage, lounger_type="B")
+        total_loungers = count_loungers(stage_name=stage, lounger_type="L")
 
         return {
             'busy_lounger': busy_lounger,
+            'reserved_lounger': reserved_lounger,
             'busy_bed': busy_bed,
+            'reserved_bed': reserved_bed,
+            'signature': signature,
             'reserved': reserved,
-            'signature': signature
+            'total_beds': total_beds,
+            'total_loungers': total_loungers
         }
 
     @property
@@ -161,7 +176,13 @@ class DailyRevenue(models.Model):
     D = models.IntegerField(default=0)
 
     busy_lounger = models.IntegerField(default=0)
+    reserved_lounger = models.IntegerField(default=0)
+    total_loungers = models.IntegerField(default=0)
+
     busy_bed = models.IntegerField(default=0)
+    reserved_bed = models.IntegerField(default=0)
+    total_beds = models.IntegerField(default=0)
+
     reserved = models.IntegerField(default=0)
     signature = models.IntegerField(default=0)
 
@@ -180,6 +201,7 @@ class DailyRevenue(models.Model):
 
         return result
 
+
     def update_total(self):
         reservations = Reservation.objects.filter(date=self.date) \
             .select_related('lounger__stage') \
@@ -188,6 +210,8 @@ class DailyRevenue(models.Model):
         busy_lounger = 0
         busy_bed = 0
         reserved = 0
+        reserved_bed = 0
+        reserved_lounger = 0
         signature = 0
         grouped_totals = defaultdict(float)
 
@@ -200,6 +224,11 @@ class DailyRevenue(models.Model):
                         busy_bed += 1
 
                 if detail.status == 'reserved':
+                    if r.lounger.lounger_type.name == 'L':
+                        reserved_lounger += 1
+                    else:
+                        reserved_bed += 1
+
                     reserved += 1
 
                 if detail.status == 'signature':
@@ -218,8 +247,10 @@ class DailyRevenue(models.Model):
         self.busy_bed = busy_bed
         self.reserved = reserved
         self.signature = signature
+        self.reserved_lounger = reserved_lounger
+        self.reserved_bed = reserved_bed
 
         self.total_income = sum(grouped_totals.values())
 
         self.save(
-            update_fields=['A', 'B', 'C', 'D', 'reserved', 'busy_lounger', 'busy_bed', 'signature', 'total_income'])
+            update_fields=['A', 'B', 'C', 'D', 'reserved', 'busy_lounger', 'busy_bed', 'signature', 'total_income', 'reserved_lounger', 'reserved_bed'])
