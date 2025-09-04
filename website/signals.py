@@ -14,7 +14,7 @@ def log_reservation_create(sender, instance, created, **kwargs):
             new_value=str({
                 'status': instance.status,
                 'date': str(instance.date),
-                'end_date': str(instance.end_date),
+                # 'end_date': str(instance.end_date),
                 'lounger': str(instance.lounger),
                 'user': str(instance.user),
             }),

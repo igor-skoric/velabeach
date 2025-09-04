@@ -99,7 +99,7 @@ class ReservationCreateAPIView(APIView):
         if not lounger:
             return Response({'error': 'Lezaljka ili baldahin ne postoji'}, status=status.HTTP_400_BAD_REQUEST)
 
-        unavailable = Reservation.check_unavailability(lounger, date, end_date)
+        unavailable = Reservation.check_unavailability(lounger, date)
         if unavailable and reservation_status != 'available':
             return Response({'error': 'Ležaljka je zauzeta.'}, status=status.HTTP_409_CONFLICT)
 
@@ -112,7 +112,7 @@ class ReservationCreateAPIView(APIView):
                     return Response({'error': 'Ne može se promeniti status u već postojeći.'},
                                     status=status.HTTP_409_CONFLICT)
                 reservation.date = date or reservation.date
-                reservation.end_date = end_date or reservation.end_date
+                # reservation.end_date = end_date or reservation.end_date
                 reservation.status = reservation_status
                 reservation.save()
 
@@ -141,7 +141,7 @@ class ReservationCreateAPIView(APIView):
                     lounger_id=lounger.id,
                     status=reservation_status,
                     date=date,
-                    end_date=end_date
+                    # end_date=end_date
                 )
 
                 # DODAVANJE DETALJA

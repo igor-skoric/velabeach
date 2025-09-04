@@ -56,17 +56,17 @@ class Reservation(models.Model):
     total_price = models.PositiveIntegerField(default=0)
     total_reservations = models.PositiveIntegerField(default=0)
     date = models.DateField()
-    end_date = models.DateField()
+    # end_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.user} - {self.lounger} - {self.date}"
 
-    def clean(self):
+    # def clean(self):
         # Custom validacija datuma
-        if self.end_date < self.date:
-            raise ValidationError("Datum završetka ne može biti pre datuma početka.")
+        # if self.end_date < self.date:
+        #     raise ValidationError("Datum završetka ne može biti pre datuma početka.")
 
     class Meta:
         constraints = [
@@ -129,17 +129,14 @@ class Reservation(models.Model):
         return sum(detail.price for detail in self.details.all())
 
     @staticmethod
-    def check_unavailability(lounger, date, end_date):
+    def check_unavailability(lounger, date):
         busy_statuses = ['unavailable', 'reserved', 'signature']
 
         return Reservation.objects.filter(
             lounger_id=lounger.id,
             lounger__stage_id=lounger.stage.id,
-            status__in=busy_statuses
-        ).filter(
-            Q(date__range=(date, end_date)) |
-            Q(end_date__range=(date, end_date)) |
-            Q(date__lte=date, end_date__gte=end_date)
+            status__in=busy_statuses,
+            date=date
         ).exists()
 
 

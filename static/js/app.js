@@ -341,27 +341,35 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                     throw error;
                   }
                 },
-              async fetchRevenue() {
-                  const date = this.convertDDMMYYYYtoYMD(this.revenueStartDate)
-                  const end_date = this.convertDDMMYYYYtoYMD(this.revenueEndDate)
+              async fetchRevenue(currentDate = null) {
+              let date = null;
+              let end_date = null;
 
-                    try {
+                  // Ako je prosleđen, koristi ga
+                if (currentDate !== null) {
+                    console.log("Parametar:", currentDate);
+                    date  = this.convertDDMMYYYYtoYMD(this.formatDateDDMMYYYY(this.currentDate));
+                    end_date  = this.convertDDMMYYYYtoYMD(this.formatDateDDMMYYYY(this.currentDate));
+                } else {
+                    console.log("Parametar nije prosleđen");
+                    date = this.convertDDMMYYYYtoYMD(this.revenueStartDate);
+                    end_date = this.convertDDMMYYYYtoYMD(this.revenueEndDate);
+                }
+                 console.log(date);
+                 console.log(end_date);
+                try {
 
-                      const response = await this.fetchData('api/daily-revenue-by-date/', { date, end_date });
-                      this.revenue = response[0];
-//                      console.log(response)
-                      return response;
+                    const response = await this.fetchData('api/daily-revenue-by-date/', { date, end_date });
+                    this.revenue = response[0];
+    //                     console.log(response)
+                    return response;
 
-                    } catch (e) {
+                } catch (e) {
                       // Dodatna obrada greške ako je potrebna
-                    }
+                }
               },
               async fetchReservations() {
                let date = this.currentDate.toLocaleDateString('en-CA'); // format YYYY-MM-DD
-                console.log('date')
-                console.log(date)
-                console.log('this.currentDate')
-                console.log(this.currentDate)
                 const stage = this.selectedStage.symbol;
 
                 try {
@@ -399,6 +407,13 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                 }
               },
               async postReservation() {
+                const reservationFormDate = new Date(this.reservationForm.date_from)
+
+                if (reservationFormDate.getDate() < this.todayDate.getDate() && this.user.role === 'user'){
+                    this.showNotification('Greška pri slanju rezervacije, datum ne može biti u prošlosti.', 'error');
+                    return;
+                }
+
                 const data = {
                   date: this.reservationForm.date_from,
                   end_date: this.reservationForm.date_to,
@@ -625,11 +640,12 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
         },
         currentDate() {
           this.fetchReservations();
+          this.fetchRevenue(this.currentDate);
 //          this.fetchRevenue();
         },
         showRevenue(){
             if (this.revenue){
-                this.fetchRevenue();
+                this.fetchRevenue(this.currentDate);
             }
         },
 

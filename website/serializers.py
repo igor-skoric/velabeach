@@ -37,7 +37,7 @@ class ReservationSerializer(serializers.ModelSerializer):
         model = Reservation
         fields = [
             'id', 'user', 'lounger', 'lounger_position', 'lounger_type', 'stage',
-            'date', 'end_date', 'status', 'status_display', 'details', 'user_display'
+            'date', 'status', 'status_display', 'details', 'user_display'
         ]
         indexes = [
             models.Index(fields=["date"]),
