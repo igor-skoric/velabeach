@@ -142,10 +142,9 @@
 
             <!-- Date picker -->
             <div class="mt-5">
-                <div class="flex items-center"
-                     :class="user.role === 'admin' ? 'block' : 'hidden'">
+                <div class="flex items-center">
                     <!-- Datum OD -->
-                    <div class="mb-4">
+                    <div class="mb-4" :class="user.role === 'admin' || user.role ==='moderator' ? 'block' : 'hidden'">
                         <input
                                 type="text"
                                 id="startDate"
@@ -154,9 +153,9 @@
                                 readonly
                         />
                     </div>
-                    <span class="mx-4 text-gray-500">do</span>
+                    <span class="mx-4 text-gray-500" :class="user.role === 'admin' ? 'block' : 'hidden'">do</span>
                     <!-- Datum DO -->
-                    <div class="mb-4">
+                    <div class="mb-4" :class="user.role === 'admin' ? 'block' : 'hidden'">
                         <input
                                 type="text"
                                 id="endDate"

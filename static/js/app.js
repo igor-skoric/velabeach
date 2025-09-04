@@ -240,7 +240,7 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                       const price = this.prices[rowLetter];
 
                       // Pretvori datum u string radi poređenja
-                      const formattedDate = this.currentDate.toISOString().split('T')[0];
+                      const formattedDate = this.currentDate.toLocaleDateString('en-CA');
 
                       // Provera da je reservations niz
                       const reservation = Array.isArray(this.reservations)
@@ -272,7 +272,7 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                   const price = this.prices['baldahin'];
                   let currentNumber = stage.bed.startingPosition;
 
-                  const formattedDate = this.currentDate.toISOString().split('T')[0];
+                  const formattedDate = this.currentDate.toLocaleDateString('en-CA');
 
                   for (let i = 0; i < totalCells; i++) {
                     if (stage.bed.obstacles.includes(i)) {
@@ -357,7 +357,11 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                     }
               },
               async fetchReservations() {
-                const date = this.currentDate.toISOString().split('T')[0];
+               let date = this.currentDate.toLocaleDateString('en-CA'); // format YYYY-MM-DD
+                console.log('date')
+                console.log(date)
+                console.log('this.currentDate')
+                console.log(this.currentDate)
                 const stage = this.selectedStage.symbol;
 
                 try {
@@ -381,6 +385,7 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                       };
                     });
 
+                    console.log(this.reservations)
                 } catch (e) {
                   // Dodatna obrada greške ako je potrebna
                 }
@@ -445,12 +450,11 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                     return;
                   }
 
-                  if(this.reservationForm.status !== 'reserved' && this.reservationForm.status !== 'signature'){
-                    this.reservationForm.date_from = this.currentDate.toISOString().split('T')[0];
-                    this.reservationForm.date_to = this.currentDate.toISOString().split('T')[0];
-                    date_from = new Date(this.reservationForm.date_from);
-                    date_to = new Date(this.reservationForm.date_to);
-                  }
+                  if (this.reservationForm.status !== 'reserved' && this.reservationForm.status !== 'signature') {
+                      const localDate = this.currentDate.toLocaleDateString('en-CA');
+                      this.reservationForm.date_from = localDate;
+                      this.reservationForm.date_to = localDate;
+                    }
 
                   if (!this.validateDates(date_from, date_to)){
                     return;
