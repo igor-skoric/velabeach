@@ -145,7 +145,6 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
             revenueStartDate: this.formatDateDDMMYYYY(new Date()),
             revenueEndDate: this.formatDateDDMMYYYY(new Date()),
 
-
             //Notifications
             notification: {
               show: false,
@@ -347,16 +346,14 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
 
                   // Ako je prosleđen, koristi ga
                 if (currentDate !== null) {
-                    console.log("Parametar:", currentDate);
+//                    console.log("Parametar:", currentDate);
                     date  = this.convertDDMMYYYYtoYMD(this.formatDateDDMMYYYY(this.currentDate));
                     end_date  = this.convertDDMMYYYYtoYMD(this.formatDateDDMMYYYY(this.currentDate));
                 } else {
-                    console.log("Parametar nije prosleđen");
+//                    console.log("Parametar nije prosleđen");
                     date = this.convertDDMMYYYYtoYMD(this.revenueStartDate);
                     end_date = this.convertDDMMYYYYtoYMD(this.revenueEndDate);
                 }
-                 console.log(date);
-                 console.log(end_date);
                 try {
 
                     const response = await this.fetchData('api/daily-revenue-by-date/', { date, end_date });
@@ -393,7 +390,6 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                       };
                     });
 
-                    console.log(this.reservations)
                 } catch (e) {
                   // Dodatna obrada greške ako je potrebna
                 }
@@ -571,12 +567,8 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                         this.showNotification('Početni datum ne može biti stariji od datuma završetka.', 'error');
                         return false;
                    }
-                  if(this.normalizeDate(startDate) < this.normalizeDate(this.currentDate)){
-                        this.showNotification('Početni datum ne može biti u prošlosti.', 'error');
-                        return false;
-                   }
 
-                  if(this.normalizeDate(startDate) < this.normalizeDate(this.todayDate)){
+                  if((this.normalizeDate(startDate) < this.normalizeDate(this.todayDate)) && this.user.role === 'user'){
                         this.showNotification('Rezervacije u prošlosti nisu moguće.', 'error');
                         return false;
                    }
@@ -640,12 +632,26 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
         },
         currentDate() {
           this.fetchReservations();
-          this.fetchRevenue(this.currentDate);
-//          this.fetchRevenue();
-        },
-        showRevenue(){
+
+          if (this.user.role === 'user' && this.normalizeDate(this.currentDate) < this.normalizeDate(this.todayDate)){
+            if(this.showRevenue){
+                this.showRevenue = false
+                this.showNotification('Prikaz statistike u prošlosti je onemogućen.', 'error');
+            }
+          }else{
             if (this.revenue){
                 this.fetchRevenue(this.currentDate);
+            }
+          }
+        },
+        showRevenue(){
+            if (this.user.role === 'user' && this.normalizeDate(this.currentDate) < this.normalizeDate(this.todayDate)){
+                this.showRevenue = false
+                this.showNotification('Prikaz statistike u prošlosti je onemogućen.', 'error');
+            }else{
+                if (this.revenue){
+                    this.fetchRevenue(this.currentDate);
+                }
             }
         },
 
