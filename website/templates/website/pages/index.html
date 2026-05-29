@@ -41,12 +41,15 @@
                 </div>
             </div>
 
-            <!-- Dinamička Tailwind klasa za broj kolona -->
-            <div class="mt-5" :class="'grid gap-1 grid-cols-' + selectedStage.chair.cols">
+            <!-- Mreža ležaljki: eksplicitni red/kol iz baze (reon A) ili auto-flow (B–D) -->
+            <div
+                    :class="sectionContainerClass('chair', selectedStage.chair.cols)"
+                    :style="sectionContainerStyle('chair', selectedStage.chair.cols)">
                 <div
                         @click="openReservationModal(cell)"
                         v-for="(cell, index) in generateChairCells(selectedStage)"
-                        :key="index"
+                        :key="cellKey(cell, index)"
+                        :style="cellGridStyle(cell)"
                         class="shadow h-10 flex items-center justify-center rounded text-sm font-semibold hover:bg-green-100 hover:border-green-400 hover:border-dashed cursor-pointer hover:text-black"
                         :class="[
                           cell.isObstacle ? 'invisible' : 'border',
@@ -68,11 +71,13 @@
 
             <div v-if="selectedStage.symbol=='A' || selectedStage.symbol == 'B' ">
                 <div
-                        :class="'grid gap-1 grid-cols-' + selectedStage.bed.cols">
+                        :class="sectionContainerClass('bed', selectedStage.bed.cols, 'afterPath')"
+                        :style="sectionContainerStyle('bed', selectedStage.bed.cols)">
                     <div
                             @click="openReservationModal(cell)"
                             v-for="(cell, index) in generateBedCells(selectedStage)"
-                            :key="index"
+                            :key="cellKey(cell, index)"
+                            :style="cellGridStyle(cell)"
                             class="shadow h-10 flex items-center justify-center rounded text-sm font-semibold hover:bg-green-100 hover:border-green-400 hover:border-dashed cursor-pointer hover:text-black"
                             :class="[
                           cell.isObstacle ? 'invisible' : 'border',
@@ -89,12 +94,14 @@
                 </div>
             </div>
             <div v-else>
-                <!-- Dinamička Tailwind klasa za broj kolona -->
-                <div :class="'grid gap-1 grid-cols-' + selectedStage.chair2.cols">
+                <div
+                        :class="sectionContainerClass('chair2', selectedStage.chair2.cols, 'afterPath')"
+                        :style="sectionContainerStyle('chair2', selectedStage.chair2.cols)">
                     <div
                             @click="openReservationModal(cell)"
                             v-for="(cell, index) in generateChairCells(selectedStage, type='ses')"
-                            :key="index"
+                            :key="cellKey(cell, index)"
+                            :style="cellGridStyle(cell)"
                             class="shadow h-10 flex items-center justify-center rounded text-sm font-semibold hover:bg-green-100 hover:border-green-400 hover:border-dashed cursor-pointer hover:text-black"
                             :class="[
                           cell.isObstacle ? 'invisible' : 'border',

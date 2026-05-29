@@ -12,6 +12,7 @@ from django.db.models import Count, Prefetch
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
 from .utils import check_user_role
+from .layout_service import build_stage_layout
 from decimal import Decimal
 
 import json
@@ -43,6 +44,21 @@ def analytics(request):
         'counts_json': json.dumps(counts),
     }
     return render(request, 'website/pages/analytics.html', context)
+
+
+class StageLayoutAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, stage_name):
+        layout = build_stage_layout(stage_name.upper())
+        if layout is None:
+            return Response({'error': 'Reon nije pronađen.'}, status=status.HTTP_404_NOT_FOUND)
+        if not layout['from_database']:
+            return Response(
+                {'error': 'Layout za ovaj reon još nije u bazi. Pokreni sync komandu.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return Response(layout)
 
 
 class ReservationListAPIView(APIView):
@@ -91,7 +107,12 @@ class ReservationCreateAPIView(APIView):
         details_data = data.get('details', [])
 
         stage = Stage.objects.filter(name=stage).first()
-        lounger = Lounger.objects.filter(position=lounger_position, stage=stage).first()
+        lounger = Lounger.objects.filter(
+            position=lounger_position,
+            stage=stage,
+            is_active=True,
+            is_obstacle=False,
+        ).first()
 
         if not date or not end_date:
             return Response({'error': 'Both date and end_date are required.'}, status=status.HTTP_400_BAD_REQUEST)

@@ -163,7 +163,8 @@ def count_loungers(stage_name: str = None, lounger_type: str = "L") -> int:
     from .models import Lounger
     qs = Lounger.objects.filter(
         lounger_type__name=lounger_type,
-        is_obstacle=False
+        is_obstacle=False,
+        is_active=True,
     )
 
     if stage_name:

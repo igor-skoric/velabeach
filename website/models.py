@@ -34,20 +34,111 @@ class LoungerType(models.Model):
         return self.name
 
 
-class Lounger(models.Model):
-    stage = models.ForeignKey(Stage, on_delete=models.CASCADE)
-    lounger_type = models.ForeignKey(LoungerType, on_delete=models.CASCADE)
-    position = models.CharField(max_length=10)
+GRID_SECTION_CHOICES = [
+    ('chair', 'Ležaljke (glavna mreža)'),
+    ('chair2', 'Ležaljke (druga mreža)'),
+    ('bed', 'Baldahini'),
+]
 
-    is_obstacle = models.BooleanField(default=False)
+
+class LoungerSection(models.Model):
+    """Mreža na mapi: ležaljke ili baldahini — broj kolona i redosled sekcije."""
+    stage = models.ForeignKey(Stage, on_delete=models.CASCADE, related_name='sections')
+    code = models.CharField(max_length=10, choices=GRID_SECTION_CHOICES)
+    title = models.CharField(max_length=100, blank=True, help_text='npr. Ležaljke, Baldahini')
+    lounger_type = models.ForeignKey(
+        LoungerType,
+        on_delete=models.PROTECT,
+        help_text='L = ležaljke, B = baldahini',
+    )
+    cols = models.PositiveIntegerField(
+        default=8,
+        help_text='Broj kolona u gridu na ekranu (povećaj ako dodaješ kolonu na kraju reda).',
+    )
+    display_order = models.PositiveIntegerField(
+        default=0,
+        help_text='Redosled sekcije na stranici (0 = prva).',
+    )
 
     class Meta:
+        ordering = ['display_order', 'code']
         constraints = [
-            models.UniqueConstraint(fields=['stage', 'lounger_type', 'position'], name='unique_lounger_position')
+            models.UniqueConstraint(fields=['stage', 'code'], name='unique_stage_section'),
+        ]
+        verbose_name = 'Sekcija mreže'
+        verbose_name_plural = 'Sekcije mreže'
+
+    def __str__(self):
+        label = self.title or self.get_code_display()
+        return f'{self.stage.name} — {label} ({self.cols} kol.)'
+
+
+class Lounger(models.Model):
+    stage = models.ForeignKey(Stage, on_delete=models.CASCADE, related_name='loungers')
+    section = models.ForeignKey(
+        LoungerSection,
+        on_delete=models.CASCADE,
+        related_name='loungers',
+        null=True,
+        blank=True,
+    )
+    lounger_type = models.ForeignKey(LoungerType, on_delete=models.CASCADE)
+    position = models.CharField(
+        max_length=10,
+        blank=True,
+        help_text='Oznaka na mapi: I3 (ležaljka) ili 25 (baldahin). Za prepreku može ostati prazno.',
+    )
+    grid_section = models.CharField(max_length=10, choices=GRID_SECTION_CHOICES, default='chair')
+    grid_row = models.PositiveIntegerField(default=1, help_text='Red u mreži (1 = prvi red).')
+    grid_col = models.PositiveIntegerField(default=1, help_text='Kolona u mreži (1 = prva kolona).')
+    sort_order = models.PositiveIntegerField(
+        default=0,
+        help_text='Zastarelo — koristi red i kolonu. Ostavljeno radi kompatibilnosti.',
+    )
+    default_price = models.PositiveIntegerField(default=0)
+    is_obstacle = models.BooleanField(
+        default=False,
+        help_text='Prepreka = prazan prostor (X) na mapi, nije rezervabilno.',
+    )
+    is_active = models.BooleanField(default=True, help_text='Neaktivne se ne prikazuju na mapi.')
+
+    class Meta:
+        ordering = ['grid_row', 'grid_col', 'sort_order']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['stage', 'lounger_type', 'position'],
+                condition=Q(is_obstacle=False) & ~Q(position=''),
+                name='unique_lounger_position',
+            ),
+            models.UniqueConstraint(
+                fields=['section', 'grid_row', 'grid_col'],
+                condition=Q(section__isnull=False),
+                name='unique_section_cell',
+            ),
         ]
 
     def __str__(self):
-        return f"{self.stage.name} - {self.lounger_type.name} #{self.position}"
+        stage_name = self.stage.name if self.stage_id else '?'
+        if self.is_obstacle:
+            return f'{stage_name} R{self.grid_row}C{self.grid_col} (prepreka)'
+        return f'{stage_name} {self.position or "?"} (R{self.grid_row}C{self.grid_col})'
+
+    def clean(self):
+        if self.section_id and self.grid_col > self.section.cols:
+            raise ValidationError({
+                'grid_col': f'Kolona mora biti 1–{self.section.cols} (podesi cols u sekciji).',
+            })
+
+    def save(self, *args, **kwargs):
+        if self.section_id:
+            self.grid_section = self.section.code
+            self.stage_id = self.section.stage_id
+            if not self.lounger_type_id:
+                self.lounger_type_id = self.section.lounger_type_id
+            if not self.is_obstacle and not self.position and self.section.lounger_type.name == 'L':
+                from .grid_utils import to_roman
+                self.position = f'{to_roman(self.grid_row)}{self.grid_col}'
+        super().save(*args, **kwargs)
 
 
 class Reservation(models.Model):

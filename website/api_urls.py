@@ -1,5 +1,14 @@
 from django.urls import path
-from .views import ReservationListAPIView, ReservationCreateAPIView, ReservationUpdateAPIView, ReservationLogViewSet, ReservationDetailViewSet, DailyRevenueByDateAPIView, ReservationDetailDeleteAPIView
+from .views import (
+    ReservationListAPIView,
+    ReservationCreateAPIView,
+    ReservationUpdateAPIView,
+    ReservationLogViewSet,
+    ReservationDetailViewSet,
+    DailyRevenueByDateAPIView,
+    ReservationDetailDeleteAPIView,
+    StageLayoutAPIView,
+)
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -7,6 +16,7 @@ router.register(r'reservation-logs', ReservationLogViewSet)
 router.register(r'reservation-details', ReservationDetailViewSet)
 
 urlpatterns = [
+    path('stages/<str:stage_name>/layout/', StageLayoutAPIView.as_view(), name='stage-layout'),
     path('reservations/', ReservationListAPIView.as_view(), name='reservations-list'),
     path('reservations/create/', ReservationCreateAPIView.as_view(), name='reservation-create'),
     path('reservations/<int:pk>/update/', ReservationUpdateAPIView.as_view(), name='reservation-update'),

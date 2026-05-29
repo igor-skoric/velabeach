@@ -150,12 +150,18 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
               show: false,
               message: '',
               type: 'success'  // or 'error'
-            }
+            },
+
+            // Layout iz baze (jedan izvor istine) — za sada reon A
+            stageLayouts: {},
         };
       },
       mounted() {
         this.selectedStage = this.stages.find(stage => stage.symbol == user.stage)
         this.datePickerInitialization();
+        if (this.selectedStage?.symbol) {
+          this.fetchStageLayout(this.selectedStage.symbol);
+        }
       },
       methods: {
               toRoman(num) {
@@ -211,7 +217,109 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                       this.fetchRevenue()
                     });
               },
+              async fetchStageLayout(symbol) {
+                try {
+                  const data = await this.fetchData(`/api/stages/${symbol}/layout/`);
+                  this.stageLayouts = { ...this.stageLayouts, [symbol]: data };
+                  const stage = this.stages.find(s => s.symbol === symbol);
+                  if (!stage || !data.sections) {
+                    return;
+                  }
+                  if (data.sections.chair && stage.chair) {
+                    stage.chair.cols = data.sections.chair.cols;
+                  }
+                  if (data.sections.chair2 && stage.chair2) {
+                    stage.chair2.cols = data.sections.chair2.cols;
+                  }
+                  if (data.sections.bed && stage.bed) {
+                    stage.bed.cols = data.sections.bed.cols;
+                  }
+                } catch (error) {
+                  console.warn(`Layout reona ${symbol} nije učitan iz baze.`, error);
+                }
+              },
+              currentStageLayout() {
+                const symbol = this.selectedStage?.symbol;
+                return symbol ? this.stageLayouts[symbol] : null;
+              },
+              sectionCols(sectionKey, fallbackCols) {
+                const section = this.currentStageLayout()?.sections?.[sectionKey];
+                return section?.cols || fallbackCols;
+              },
+              usesPlacedCells(sectionKey) {
+                const section = this.currentStageLayout()?.sections?.[sectionKey];
+                return (
+                  this.currentStageLayout()?.from_database &&
+                  section?.cells?.length > 0 &&
+                  section.cells[0].grid_row != null
+                );
+              },
+              sectionContainerStyle() {
+                return {};
+              },
+              sectionContainerClass(sectionKey, fallbackCols, position = 'first') {
+                const cols = this.sectionCols(sectionKey, fallbackCols);
+                const topMargin = position === 'afterPath' ? 'mt-2' : 'mt-5';
+                return `${topMargin} grid gap-1 grid-cols-${cols}`;
+              },
+              cellGridStyle(cell) {
+                if (cell.grid_row != null && cell.grid_col != null) {
+                  return {
+                    gridRow: cell.grid_row,
+                    gridColumn: cell.grid_col,
+                  };
+                }
+                return {};
+              },
+              cellKey(cell, index) {
+                if (cell.lounger_id) {
+                  return `l-${cell.lounger_id}`;
+                }
+                if (cell.grid_row != null && cell.grid_col != null) {
+                  return `r${cell.grid_row}c${cell.grid_col}`;
+                }
+                return `i-${index}`;
+              },
+              mergeCellsWithReservations(cells, stageSymbol) {
+                const formattedDate = this.currentDate.toLocaleDateString('en-CA');
+                return cells.map(cell => {
+                  if (cell.isObstacle) {
+                    return { ...cell };
+                  }
+                  const reservation = Array.isArray(this.reservations)
+                    ? this.reservations.find(r =>
+                        r.lounger_position === cell.label &&
+                        r.stage === stageSymbol &&
+                        r.date === formattedDate
+                      )
+                    : null;
+                  return {
+                    ...cell,
+                    status: reservation ? reservation.status : 'available',
+                    status_display: reservation ? reservation.status_display : 'Dostupno',
+                    reservation: reservation,
+                  };
+                });
+              },
+              cellsFromLayout(stage, sectionKey) {
+                const cells = this.stageLayouts[stage.symbol]?.sections?.[sectionKey]?.cells;
+                if (!cells) {
+                  return null;
+                }
+                return this.mergeCellsWithReservations(cells, stage.symbol);
+              },
+              ensureStageLayout(symbol) {
+                if (!this.stageLayouts[symbol]) {
+                  this.fetchStageLayout(symbol);
+                }
+              },
               generateChairCells(stage, type='first') {
+                  const sectionKey = type === 'first' ? 'chair' : 'chair2';
+                  const fromDb = this.cellsFromLayout(stage, sectionKey);
+                  if (fromDb) {
+                    return fromDb;
+                  }
+
                   const result = [];
                   let totalCells, cols, currentIndex, obstacles;
                   if (type==='first'){
@@ -254,6 +362,8 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                         isObstacle: false,
                         label,
                         price,
+                        grid_row: row + 1,
+                        grid_col: col,
                         status: reservation ? reservation.status : 'available',
                         status_display: reservation ? reservation.status_display : 'Dostupno',
                         reservation: reservation
@@ -266,6 +376,11 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                   return result;
               },
               generateBedCells(stage) {
+                  const fromDb = this.cellsFromLayout(stage, 'bed');
+                  if (fromDb) {
+                    return fromDb;
+                  }
+
                   const totalCells = stage.bed.total + stage.bed.obstacles.length;
                   const result = [];
                   const price = this.prices['baldahin'];
@@ -285,10 +400,14 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                           )
                         : null;
 
+                      const bedRow = Math.floor((currentNumber - stage.bed.startingPosition) / stage.bed.cols) + 1;
+                      const bedCol = ((currentNumber - stage.bed.startingPosition) % stage.bed.cols) + 1;
                       result.push({
                         isObstacle: false,
                         label: currentNumber,
                         price: price,
+                        grid_row: bedRow,
+                        grid_col: bedCol,
                         status: reservation ? reservation.status : 'available',
                         status_display: reservation ? reservation.status_display : 'Dostupno',
                         reservation: reservation
@@ -302,6 +421,9 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
                 },
               changeStage(stage){
                 this.selectedStage = stage
+                if (!this.stageLayouts[stage.symbol]) {
+                  this.fetchStageLayout(stage.symbol);
+                }
               },
               prevDay() {
                 const date = new Date(this.currentDate);
@@ -626,9 +748,11 @@ const { createApp, ref, onMounted, onBeforeUnmount, reactive  } = Vue;
           }
         },
       watch: {
-        selectedStage() {
+        selectedStage(stage) {
           this.fetchReservations();
-//          this.fetchRevenue();
+          if (stage?.symbol && !this.stageLayouts[stage.symbol]) {
+            this.fetchStageLayout(stage.symbol);
+          }
         },
         currentDate() {
           this.fetchReservations();
